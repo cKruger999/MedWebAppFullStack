@@ -1,0 +1,6 @@
+@MedWebApp_HostAddress = http://localhost:5213
+
+GET {{MedWebApp_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
