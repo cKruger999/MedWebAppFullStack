@@ -39,7 +39,7 @@ const LoginPage = () => {
             }
             else if(role ==="Admin")
             {
-
+                navigate("./AdminCRUD", {replace: true});
             }
 
             

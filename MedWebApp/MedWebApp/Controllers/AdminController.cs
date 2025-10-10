@@ -52,5 +52,28 @@ namespace MedWebApp.Controllers
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "This Role Does Not Exist!" });
             }
         }
+
+        [HttpGet("users-with-roles")]
+        public async Task<IActionResult> GetAllUsersWithRoles()
+        {
+            var users = _userManager.Users.ToList();
+            var userList = new List<object>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userList.Add(new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    Roles = roles
+                });
+            }
+
+            return Ok(userList);
+        }
+
+
     }
 }
