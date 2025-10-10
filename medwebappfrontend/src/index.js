@@ -6,9 +6,11 @@ import PatientCRUD from './PatientCRUD';
 import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './Login';
+import AdminCRUD from './AdminCRUD';
 
 const router = createBrowserRouter([{path: "/", element: <LoginPage/>},
-  {path:"/PatientCRUD", element: <PatientCRUD/>}
+  {path:"/PatientCRUD", element: <PatientCRUD/>},
+  {path:"/AdminCRUD", element: <AdminCRUD/>}
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
