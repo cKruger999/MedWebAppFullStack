@@ -10,7 +10,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const PatientCRUD = () =>
+const  MedApp = () =>
 {
     const [show, setShow] = useState(false);
 
@@ -44,7 +44,7 @@ const PatientCRUD = () =>
 
     const getPatientData = () =>
     {
-        axios.get('https://localhost:44361/api/Patient/GetPatients')
+        axios.get('https://localhost:7108/api/Patient/GetPatients')
         .then((result) =>
         {setData(result.data)})
         .catch((error)=>{
@@ -53,7 +53,7 @@ const PatientCRUD = () =>
 
     const handleSave = () =>
     {
-        const url = 'https://localhost:44361/api/Patient/AddPatient'
+        const url = 'https://localhost:7108/api/Patient/AddPatient'
         const data = {
             "patientName": patientName,
             "patientSurname": patientSurname,
@@ -96,7 +96,7 @@ const PatientCRUD = () =>
     {
         //alert(id);
         handleShow();
-        axios.get('https://localhost:44361/api/Patient/GetPatient/' + id)
+        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id)
         .then((result) =>
         {
             setEditPatientName(result.data.patientName);
@@ -115,12 +115,12 @@ const PatientCRUD = () =>
     }
     const handleDelete = (id) =>
     {
-        if(window.confirm("Are you sure you want to delete this patient?") === true)
+        if(window.confirm("Are you sure you want to delete this patient?") == true)
         {
-            const url = 'https://localhost:44361/api/Patient/DeletePatient/' + id;
+            const url = 'https://localhost:7108/api/Patient/DeletePatient/' + id;
             axios.delete(url)
             .then((result) =>{
-                if(result.status === 200)
+                if(result.status == 200)
                 {
                     toast.success('Patient Successfully Deleted!');
                     getPatientData();
@@ -134,7 +134,7 @@ const PatientCRUD = () =>
     }
     const handleUpdate = () =>
     {
-        const url = 'https://localhost:44361/api/Patient/UpdatePatient/' + editPatientID;
+        const url = 'https://localhost:7108/api/Patient/UpdatePatient/' + editPatientID;
         const data = {
             "patientName": editPatientName,
             "patientSurname": editPatientSurname,
@@ -147,7 +147,7 @@ const PatientCRUD = () =>
         }
         axios.put(url, data)
         .then((result) =>{
-            if(result.status === 200)
+            if(result.status == 200)
             {
                 getPatientData()
                 clear();
@@ -332,4 +332,4 @@ const PatientCRUD = () =>
     )
 }
 
-export default PatientCRUD;
+export default MedApp;

@@ -22,7 +22,6 @@ namespace MedWebApp.Controllers
             _configuration = configuration;
         }
         [HttpPost]
-        [Route("RegisterUser")]
         public async Task<IActionResult> Register([FromBody] User registerUser, string role)
         {
             IdentityUser? userExist = await _userManager.FindByEmailAsync(registerUser.EmailAddress);
