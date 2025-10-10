@@ -1,4 +1,5 @@
 ﻿using MedWebApp.Models.Entities;
+using MedWebApp.Models.SignUp;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -13,6 +14,7 @@ namespace MedWebApp.Data
         }
         public DbSet<Patient> Patients { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
+        public DbSet<User> Users { get; set; }
 
         protected override void OnModelCreating(ModelBuilder builder)
         {

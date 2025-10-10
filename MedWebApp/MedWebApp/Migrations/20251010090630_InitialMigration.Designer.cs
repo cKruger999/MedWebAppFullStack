@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedWebApp.Migrations
 {
     [DbContext(typeof(MedAppDbContext))]
-    [Migration("20251006083653_secondMigration")]
-    partial class secondMigration
+    [Migration("20251010090630_InitialMigration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
