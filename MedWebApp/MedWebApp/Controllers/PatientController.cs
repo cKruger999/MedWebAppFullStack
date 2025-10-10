@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedWebApp.Controllers
 {
-    [Authorize(Roles = "Doctor's Assistant, Doctor")]
+
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -18,12 +18,14 @@ namespace MedWebApp.Controllers
             this.dbContext = dbContext;
         }
         [HttpGet]
+        [Route("GetPatients")]
         public IActionResult GetAllPatients()
         {
             var allstudents = dbContext.Patients.ToList();
             return Ok(allstudents);
         }
         [HttpPost]
+        [Route("AddPatient")]
         public IActionResult AddPatient(AddPatientDto addPatientDto)
         {
             var patientEntity = new Patient()
@@ -43,12 +45,12 @@ namespace MedWebApp.Controllers
             return Ok(patientEntity);
         }
         [HttpGet]
-        [Route("{id:int}")]
+        [Route("GetPatient/{id}")]
 
         public IActionResult GetPatient(int id)
         {
             var patient = dbContext.Patients.Find(id);
-            if (patient == null) 
+            if (patient == null)
             {
                 return NotFound();
             }
@@ -56,6 +58,7 @@ namespace MedWebApp.Controllers
         }
 
         [HttpPut]
+        [Route("UpdatePatient/{id}")]
         public IActionResult UpdatePatient(int id, UpdatePatientDto updatePatientDto)
         {
             var patient = dbContext.Patients.Find(id);
@@ -76,6 +79,7 @@ namespace MedWebApp.Controllers
             return Ok(patient);
         }
         [HttpDelete]
+        [Route("DeletePatient/{id}")]
         public IActionResult DeletePatient(int id)
         {
             var patient = dbContext.Patients.Find(id);

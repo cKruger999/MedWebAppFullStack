@@ -18,6 +18,7 @@ namespace MedWebApp.Controllers
             _dbContext = dbContext;
         }
         [HttpGet]
+        [Route("GetHistory")]
         public IActionResult ViewHistory(int patientid) 
         {
             var patient = _dbContext.Patients.Find(patientid);
@@ -33,6 +34,7 @@ namespace MedWebApp.Controllers
             return Ok(visitHistory);
         }
         [HttpPost]
+        [Route("AddVisit")]
         public IActionResult AddVisitRecord(AddVisitRecordDto addVisitRecordDto)
         {
             var visitRecord = new VisitRecord()
@@ -47,6 +49,7 @@ namespace MedWebApp.Controllers
             return Ok(visitRecord);
         }
         [HttpPut]
+        [Route("UpdateVisit")]
         public IActionResult UpdateVisitRecord(int id, UpdateVisitRecordDto updateVisitRecordDto)
         {
             var visitRecord = _dbContext.VisitRecords.Find(id);
