@@ -17,7 +17,7 @@ namespace MedWebApp.Controllers
         {
             this.dbContext = dbContext;
         }
-        [HttpGet]
+        [HttpGet("GetAllPatients")]
         public IActionResult GetAllPatients()
         {
             var allstudents = dbContext.Patients.ToList();

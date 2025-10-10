@@ -44,11 +44,15 @@ const  MedApp = () =>
 
     const getPatientData = () =>
     {
-        axios.get('https://localhost:7108/api/Patient/GetPatients')
-        .then((result) =>
-        {setData(result.data)})
-        .catch((error)=>{
-            console.log(error)})
+        const token = localStorage.getItem('token');
+
+        axios.get('https://localhost:7108/api/Patient/GetAllPatients', {
+        headers: {
+        Authorization: `Bearer ${token}`
+        }
+    })
+        .then((result) => setData(result.data))
+        .catch((error) => console.log(error));
     }
 
     const handleSave = () =>
