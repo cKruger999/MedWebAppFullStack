@@ -10,11 +10,15 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-const MedApp = () =>
+const AdminCRUD = () =>
 {
     const[username, setUsername] = useState('');
     const[emailAddress, setEmailAddress] = useState('');
     const[password, setPassword] = useState('');
+
+    return(
+        <div>AdminCRUD</div>
+    )
 }
 
-export default MedApp;
+export default AdminCRUD;

@@ -16,7 +16,7 @@ const LoginPage = () => {
             return;
         }
         try {
-            const response = await axios.post('https://localhost:7108/api/Auth/login',{
+            const response = await axios.post('https://localhost:44361/api/Auth/login',{
                 username: username,
                 password: password,
             });
@@ -39,7 +39,7 @@ const LoginPage = () => {
             }
             else if(role ==="Admin")
             {
-
+                navigate("./AdminCrud", {replace: true});
             }
 
             
