@@ -22,7 +22,7 @@ namespace MedWebApp.Controllers
             _configuration = configuration;
         }
         [HttpPost]
-        public async Task<IActionResult> Register([FromBody] User registerUser, string role)
+        public async Task<IActionResult> Register([FromBody] RegisterModel registerUser, string role)
         {
             IdentityUser? userExist = await _userManager.FindByEmailAsync(registerUser.EmailAddress);
             if (userExist != null)

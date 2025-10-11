@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Reflection.Emit;
 namespace MedWebApp.Data
 {
-    public class MedAppDbContext : IdentityDbContext
+    public class MedAppDbContext : IdentityDbContext<IdentityUser>
     {
         public MedAppDbContext(DbContextOptions<MedAppDbContext> options) : base(options)
         {
@@ -20,7 +20,7 @@ namespace MedWebApp.Data
             
             base.OnModelCreating(builder);
             SeedRoles(builder);
-            builder.Entity<User>().HasNoKey();
+            builder.Entity<RegisterModel>().HasNoKey();
         }
         private static void SeedRoles(ModelBuilder builder)
         {

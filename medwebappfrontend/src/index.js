@@ -7,10 +7,12 @@ import reportWebVitals from './reportWebVitals';
 import { BrowserRouter, createBrowserRouter, RouterProvider } from 'react-router-dom';
 import LoginPage from './Login';
 import AdminCRUD from './AdminCRUD';
+import DoctorCRUD from './DoctorCRUD';
 
 const router = createBrowserRouter([{path: "/", element: <LoginPage/>},
   {path:"/PatientCRUD", element: <PatientCRUD/>},
-  {path:"/AdminCRUD", element: <AdminCRUD/>}
+  {path:"/AdminCRUD", element: <AdminCRUD/>},
+  {path:"/DoctorCRUD", element: <DoctorCRUD/>}
 ]);
 const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(

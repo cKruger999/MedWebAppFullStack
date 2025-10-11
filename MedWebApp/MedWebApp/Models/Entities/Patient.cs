@@ -1,5 +1,6 @@
 ﻿
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
 using System.Text.Json.Serialization;
 
 
@@ -13,6 +14,7 @@ namespace MedWebApp.Models.Entities
         public required string PatientName { get; set; }
 
         public required string PatientSurname { get; set; }
+        public required string PatientUsername { get; set; }
 
         public required string Gender { get; set; }
 

@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedWebApp.Migrations
 {
     [DbContext(typeof(MedAppDbContext))]
-    [Migration("20251006083653_secondMigration")]
-    partial class secondMigration
+    [Migration("20251010234850_initialMigration")]
+    partial class initialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -94,6 +94,23 @@ namespace MedWebApp.Migrations
                     b.HasIndex("PatientId");
 
                     b.ToTable("VisitRecords");
+                });
+
+            modelBuilder.Entity("MedWebApp.Models.SignUp.RegisterModel", b =>
+                {
+                    b.Property<string>("EmailAddress")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Password")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Username")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.ToTable("RegisterModel");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

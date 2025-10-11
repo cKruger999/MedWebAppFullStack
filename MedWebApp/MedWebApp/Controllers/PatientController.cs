@@ -4,6 +4,7 @@ using MedWebApp.Models.Entities;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Authorization.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedWebApp.Controllers
 {
@@ -30,6 +31,7 @@ namespace MedWebApp.Controllers
             {
                 PatientName = addPatientDto.PatientName,
                 PatientSurname = addPatientDto.PatientSurname,
+                PatientUsername = addPatientDto.PatientUsername,
                 Gender = addPatientDto.Gender,
                 HomeAddress = addPatientDto.HomeAddress,
                 EmailAddress = addPatientDto.EmailAddress,
@@ -66,6 +68,7 @@ namespace MedWebApp.Controllers
 
             patient.PatientName = updatePatientDto.PatientName;
             patient.PatientSurname = updatePatientDto.PatientSurname;
+            patient.PatientUsername = updatePatientDto.PatientUsername;
             patient.Gender = updatePatientDto.Gender;
             patient.HomeAddress = updatePatientDto.HomeAddress;
             patient.EmailAddress = updatePatientDto.EmailAddress;
@@ -88,5 +91,24 @@ namespace MedWebApp.Controllers
             dbContext.SaveChanges();
             return Ok(patient);
         }
+
+        [HttpGet("search")]
+        [Authorize(Roles = "Doctor")]
+        public IActionResult SearchPatients([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return BadRequest("Search term is required");
+
+            var patients = dbContext.Patients
+                .Where(p =>
+                    p.PatientId.ToString().Contains(searchTerm) ||
+                    p.PatientName.Contains(searchTerm) ||
+                    p.PatientSurname.Contains(searchTerm) ||
+                    p.PatientUsername.Contains(searchTerm))
+                .ToList();
+
+            return Ok(patients);
+        }
+
     }
 }

@@ -35,7 +35,7 @@ const LoginPage = () => {
             }
             else if(role ==="Doctor")
             {
-                
+                navigate("./DoctorCRUD", {replace: true});
             }
             else if(role ==="Admin")
             {

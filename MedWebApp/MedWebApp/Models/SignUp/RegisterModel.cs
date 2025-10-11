@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace MedWebApp.Models.SignUp
 {
-    public class User
+    public class RegisterModel
     {
         [Required(ErrorMessage = "Username is Required")]
         public string Username { get; set; }
