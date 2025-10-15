@@ -38,7 +38,6 @@ namespace MedWebApp.Controllers
             var visitRecord = new VisitRecord()
             {
                 PatientId = addVisitRecordDto.PatientId,
-                VisitDate = addVisitRecordDto.VisitDate,
                 Diagnosis = addVisitRecordDto.Diagnosis,
                 Treatment = addVisitRecordDto.Treatment
             };

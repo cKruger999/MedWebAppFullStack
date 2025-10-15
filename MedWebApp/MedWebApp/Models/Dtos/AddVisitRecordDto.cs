@@ -6,7 +6,7 @@ namespace MedWebApp.Models.Dtos
 {
     public class AddVisitRecordDto
     {
-        public required DateTime VisitDate { get; set; }
+        public DateTime VisitDate { get; set; } = DateTime.Now;
 
         public required string Diagnosis { get; set; }
 

@@ -42,6 +42,10 @@ const DoctorCRUD = () => {
         })
         .then((result) => {
             setPatients(result.data);
+            if(result.data.length === 0) {
+                toast.error('No patients found');
+            }
+            else
             toast.success('Found ' + result.data.length + ' patient(s)');
         })
         .catch((error) => {
@@ -75,7 +79,6 @@ const DoctorCRUD = () => {
         const url = 'https://localhost:7108/api/Visit';
         const data = {
             "patientId": selectedPatient.patientId,
-            "visitDate": new Date().toISOString(), // Auto-set current date/time
             "diagnosis": diagnosis,
             "treatment": treatment
         }
@@ -120,7 +123,6 @@ const DoctorCRUD = () => {
         const url = 'https://localhost:7108/api/Visit?id=' + editVisitID;
         const data = {
             "patientId": selectedPatient.patientId,
-            "visitDate": new Date().toISOString(), // Auto-set current date/time for edits
             "diagnosis": editDiagnosis,
             "treatment": editTreatment
         }
@@ -163,7 +165,7 @@ const DoctorCRUD = () => {
                         <input 
                             type="text" 
                             className="form-control" 
-                            placeholder="Search patients by name, surname, or ID..." 
+                            placeholder="Search patients by Name, Surname, or Username..." 
                             value={searchTerm} 
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -188,7 +190,7 @@ const DoctorCRUD = () => {
                                     <th>#</th>
                                     <th>Name</th>
                                     <th>Surname</th>
-                                    <th>Email</th>
+                                    <th>Username</th>
                                     <th>Select</th>
                                 </tr>
                             </thead>
@@ -199,7 +201,7 @@ const DoctorCRUD = () => {
                                             <td>{index + 1}</td>
                                             <td>{patient.patientName}</td>
                                             <td>{patient.patientSurname}</td>
-                                            <td>{patient.emailAddress}</td>
+                                            <td>{patient.patientUsername}</td>
                                             <td>
                                                 <button 
                                                     className='btn btn-success'
