@@ -10,6 +10,8 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
+
+
 const DoctorCRUD = () => {
     const [show, setShow] = useState(false);
     const handleClose = () => setShow(false);
@@ -27,6 +29,24 @@ const DoctorCRUD = () => {
 
     const [patients, setPatients] = useState([]);
     const [visits, setVisits] = useState([]);
+
+    useEffect(() => {getPatients()}, []);
+
+    const getPatients = () => {
+        const token = localStorage.getItem('token');
+        axios.get('https://localhost:7108/api/Patient', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
+        .then((result) => {
+            setPatients(result.data);
+        })
+        .catch((error) => {
+            console.log(error);     
+            toast.error('Failed to load patients');
+        });
+    }   
 
     const searchPatients = () => {
         if (!searchTerm.trim()) {
