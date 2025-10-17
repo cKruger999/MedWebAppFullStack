@@ -18,17 +18,17 @@ namespace MedWebApp.Controllers
             _dbContext = dbContext;
         }
         [HttpGet]
-        [Route("GetHistory")]
-        public IActionResult ViewHistory(int patientid) 
+        [Route("GetHistory/{id}")]
+        public IActionResult ViewHistory(int id) 
         {
-            var patient = _dbContext.Patients.Find(patientid);
+            var patient = _dbContext.Patients.Find(id);
             if (patient == null)
             {
                 return NotFound();
             }
 
             var visitHistory = _dbContext.VisitRecords
-                .Where(v => v.PatientId == patientid)
+                .Where(v => v.PatientId == id)
                 .OrderByDescending(v => v.VisitDate)
                 .ToList();
             return Ok(visitHistory);
@@ -49,7 +49,7 @@ namespace MedWebApp.Controllers
             return Ok(visitRecord);
         }
         [HttpPut]
-        [Route("UpdateVisit")]
+        [Route("UpdateVisit/{id}")]
         public IActionResult UpdateVisitRecord(int id, UpdateVisitRecordDto updateVisitRecordDto)
         {
             var visitRecord = _dbContext.VisitRecords.Find(id);
@@ -61,6 +61,19 @@ namespace MedWebApp.Controllers
             visitRecord.VisitDate = updateVisitRecordDto.VisitDate;
             visitRecord.Diagnosis = updateVisitRecordDto.Diagnosis;
             visitRecord.Treatment = updateVisitRecordDto.Treatment;
+            _dbContext.SaveChanges();
+            return Ok(visitRecord);
+        }
+        [HttpDelete]
+        [Route("DeleteVisit/{id}")]
+        public IActionResult DeleteVisitRecord(int id)
+        {
+            var visitRecord = _dbContext.VisitRecords.Find(id);
+            if (visitRecord == null)
+            {
+                return NotFound();
+            }
+            _dbContext.VisitRecords.Remove(visitRecord);
             _dbContext.SaveChanges();
             return Ok(visitRecord);
         }

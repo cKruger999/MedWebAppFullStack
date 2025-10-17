@@ -9,7 +9,7 @@ namespace MedWebApp.Models.Entities
         [Key]
         public int VisitId { get; set; }
 
-        public DateTime VisitDate { get; set; }
+        public DateTime VisitDate { get; set; } = DateTime.Now;
 
         public string? Diagnosis { get; set; } 
 

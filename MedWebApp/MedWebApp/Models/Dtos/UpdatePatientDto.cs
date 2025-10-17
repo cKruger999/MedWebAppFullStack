@@ -9,6 +9,8 @@ namespace MedWebApp.Models.Dtos
 
         public required string PatientSurname { get; set; }
 
+        public required string PatientUsername { get; set; }
+
         public required string Gender { get; set; }
 
         public required string HomeAddress { get; set; }

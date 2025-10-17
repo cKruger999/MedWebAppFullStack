@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace MedWebApp.Migrations
 {
     [DbContext(typeof(MedAppDbContext))]
-    [Migration("20251006083653_secondMigration")]
-    partial class secondMigration
+    [Migration("20251017114728_Initial-Migration")]
+    partial class InitialMigration
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -57,6 +57,10 @@ namespace MedWebApp.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("PatientSurname")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("PatientUsername")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 

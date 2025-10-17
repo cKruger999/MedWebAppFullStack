@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace MedWebApp.Controllers
 {
-
+    [Authorize(Roles ="Doctor, Doctor's Assistant")]
     [Route("api/[controller]")]
     [ApiController]
     public class PatientController : ControllerBase
@@ -21,8 +21,8 @@ namespace MedWebApp.Controllers
         [Route("GetPatients")]
         public IActionResult GetAllPatients()
         {
-            var allstudents = dbContext.Patients.ToList();
-            return Ok(allstudents);
+            var allpatients = dbContext.Patients.ToList();
+            return Ok(allpatients);
         }
         [HttpPost]
         [Route("AddPatient")]
@@ -32,6 +32,7 @@ namespace MedWebApp.Controllers
             {
                 PatientName = addPatientDto.PatientName,
                 PatientSurname = addPatientDto.PatientSurname,
+                PatientUsername = addPatientDto.PatientUsername,
                 Gender = addPatientDto.Gender,
                 HomeAddress = addPatientDto.HomeAddress,
                 EmailAddress = addPatientDto.EmailAddress,
@@ -69,6 +70,7 @@ namespace MedWebApp.Controllers
 
             patient.PatientName = updatePatientDto.PatientName;
             patient.PatientSurname = updatePatientDto.PatientSurname;
+            patient.PatientUsername = updatePatientDto.PatientUsername;
             patient.Gender = updatePatientDto.Gender;
             patient.HomeAddress = updatePatientDto.HomeAddress;
             patient.EmailAddress = updatePatientDto.EmailAddress;
@@ -91,6 +93,23 @@ namespace MedWebApp.Controllers
             dbContext.Patients.Remove(patient);
             dbContext.SaveChanges();
             return Ok(patient);
+        }
+
+        [HttpGet("search")]
+        public IActionResult SearchPatients([FromQuery] string searchTerm)
+        {
+            if (string.IsNullOrWhiteSpace(searchTerm))
+                return BadRequest("Search term is required");
+            var lowerTerm = searchTerm.ToLower();
+            var patients = dbContext.Patients
+                .Where(p =>
+                    p.PatientId.ToString().Contains(lowerTerm) ||
+                    p.PatientName.Contains(lowerTerm) ||
+                    p.PatientSurname.Contains(lowerTerm) ||
+                    p.PatientUsername.Contains(lowerTerm))
+                .ToList();
+
+            return Ok(patients);
         }
     }
 }
