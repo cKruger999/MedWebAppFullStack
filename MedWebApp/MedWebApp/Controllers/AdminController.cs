@@ -74,6 +74,25 @@ namespace MedWebApp.Controllers
             return Ok(userList);
         }
 
+        [HttpDelete("Delte-users")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "User not found." });
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+
+            return Ok(user);
+
+
+
+        }
+
 
     }
 }

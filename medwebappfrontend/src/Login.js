@@ -5,6 +5,7 @@ import axios from "axios";
 import { jwtDecode } from "jwt-decode";
 import PatientCRUD from './PatientCRUD';
 import { useNavigate} from 'react-router-dom';
+import AdminCRUD from "./AdminCRUD";
 
 const LoginPage = () => {
     const [username, setUsername] = useState('');
@@ -16,6 +17,7 @@ const LoginPage = () => {
             return;
         }
         try {
+            console.log("Attempting login with", username, password);
             const response = await axios.post('https://localhost:7108/api/Auth/login',{
                 username: username,
                 password: password,

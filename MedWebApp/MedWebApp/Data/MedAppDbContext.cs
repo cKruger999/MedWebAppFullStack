@@ -15,6 +15,8 @@ namespace MedWebApp.Data
         public DbSet<Patient> Patients { get; set; }
         public DbSet<VisitRecord> VisitRecords { get; set; }
 
+        public DbSet<User> User { get; set; }
+
         protected override void OnModelCreating(ModelBuilder builder)
         {
             
