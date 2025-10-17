@@ -78,6 +78,13 @@ const DoctorCRUD = () => {
         });
     }
 
+    const showAllPatients = () => {
+      setSearchTerm(""); // Clear the search input
+      getPatients(); // Fetch all patients again
+      toast.info("Showing all patients");
+    };
+
+
     const getPatientVisits = (patientId) => {
         const token = localStorage.getItem('token');
         axios.get('https://localhost:7108/api/Visit?patientid=' + patientId, {
@@ -212,207 +219,240 @@ const DoctorCRUD = () => {
  
 
     return (
-        <Fragment>
-            <ToastContainer />
-            <br />
-            
-            {/* Search Section */}
-            <Container>
-                <Row>
-                    <Col>
-                        <input 
-                            type="text" 
-                            className="form-control" 
-                            placeholder="Search patients by Name, Surname, or Username..." 
-                            value={searchTerm} 
-                            onChange={(e) => setSearchTerm(e.target.value)}
-                        />
-                    </Col>
-                    <Col>
-                        <button className="btn btn-primary" onClick={searchPatients}>Search Patients</button>
-                    </Col>
-                </Row>
-            </Container>
+      <Fragment>
+        <ToastContainer />
+        <br />
 
-            <br />
+        {/* Search Section */}
+        <Container>
+          <Row>
+            <Col>
+              <input
+                type="text"
+                className="form-control"
+                placeholder="Search patients by Name, Surname, or Username..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+            </Col>
+            <Col>
+              <button className="btn btn-primary" onClick={searchPatients}>
+                Search Patients
+              </button>
+            </Col>
+            <Col className="d-flex justify-content-end">
+              <button className="btn btn-secondary" onClick={showAllPatients}>
+                Show All Patients
+              </button>
+            </Col>
+          </Row>
+        </Container>
 
-            {/* Main Content Area */}
-            <Container>
-                <Row>
-                    {/* Patient List Column */}
-                    <Col md={6}>
-                        <h4>Patient List</h4>
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Name</th>
-                                    <th>Surname</th>
-                                    <th>Username</th>
-                                    <th>Select</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {patients && patients.length > 0 ? 
-                                    patients.map((patient, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{patient.patientName}</td>
-                                            <td>{patient.patientSurname}</td>
-                                            <td>{patient.patientUsername}</td>
-                                            <td>
-                                                <button 
-                                                    className='btn btn-success'
-                                                    onClick={() => handlePatientSelect(patient)}
-                                                >
-                                                    Select
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                : (
-                                    <tr>
-                                        <td colSpan="5" className="text-center">No patients found. Search for patients.</td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </Table>
-                    </Col>
+        <br />
 
-                    {/* Visit History Column */}
-                    <Col md={6}>
-                        <div className="d-flex justify-content-between align-items-center">
-                            <h4>
-                                Visit History 
-                                {selectedPatient && ` - ${selectedPatient.patientName} ${selectedPatient.patientSurname}`}
-                            </h4>
-                            <button className="btn btn-primary" onClick={handleShow}>
-                                + Add Visit
-                            </button>
-                        </div>
-                        
-                        <Table striped bordered hover>
-                            <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Date</th>
-                                    <th>Diagnosis</th>
-                                    <th>Treatment</th>
-                                    <th colSpan="2" className='text-center'>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {visits && visits.length > 0 ? 
-                                    visits.map((visit, index) => (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td>{new Date(visit.visitDate).toLocaleString()}</td>
-                                            <td>{visit.diagnosis || 'N/A'}</td>
-                                            <td>{visit.treatment || 'N/A'}</td>
-                                            <td>
-                                                <button 
-                                                    className='btn btn-warning'
-                                                    onClick={() => handleEdit(visit.visitId)}
-                                                >
-                                                    Edit
-                                                </button>
-                                            </td>
-                                            <td>
-                                                <button 
-                                                    className='btn btn-danger'
-                                                    onClick={() => confirmDelete(visit.visitId)}
-                                                >
-                                                    Delete
-                                                </button>
-                                            </td>
-                                        </tr>
-                                    ))
-                                : (
-                                    <tr>
-                                        <td colSpan="5" className="text-center">
-                                            {selectedPatient ? 'No visits found for this patient' : 'Select a patient to view visits'}
-                                        </td>
-                                    </tr>
-                                )}
-                            </tbody>
-                        </Table>
-                    </Col>
-                </Row>
-            </Container>
+        {/* Main Content Area */}
+        <Container>
+          <Row>
+            {/* Patient List Column */}
+            <Col md={6}>
+              <h4>Patient List</h4>
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Username</th>
+                    <th>Select</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {patients && patients.length > 0 ? (
+                    patients.map((patient, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{patient.patientName}</td>
+                        <td>{patient.patientSurname}</td>
+                        <td>{patient.patientUsername}</td>
+                        <td>
+                          <button
+                            className="btn btn-success"
+                            onClick={() => handlePatientSelect(patient)}
+                          >
+                            Select
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center">
+                        No patients found. Search for patients.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Col>
 
-            {/* Add/Edit Visit Modal */}
-            <Modal show={show} onHide={handleClose}>
-                <Modal.Header closeButton>
-                    <Modal.Title>
-                        {editVisitID ? 'Edit Visit' : 'Add Visit'} 
-                        {selectedPatient && ` - ${selectedPatient.patientName} ${selectedPatient.patientSurname}`}
-                    </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <Col>
-                            <label>Diagnosis</label>
-                            <textarea 
-                                className="form-control" 
-                                rows="3"
-                                placeholder="Enter diagnosis..."
-                                value={editVisitID ? editDiagnosis : diagnosis}
-                                onChange={(e) => editVisitID ? setEditDiagnosis(e.target.value) : setDiagnosis(e.target.value)}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <label>Treatment</label>
-                            <textarea 
-                                className="form-control" 
-                                rows="3"
-                                placeholder="Enter treatment..."
-                                value={editVisitID ? editTreatment : treatment}
-                                onChange={(e) => editVisitID ? setEditTreatment(e.target.value) : setTreatment(e.target.value)}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col>
-                            <small className="text-muted">
-                                Visit will be recorded with current date/time: {new Date().toLocaleString()}
-                            </small>
-                        </Col>
-                    </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleClose}>
-                        Close
-                    </Button>
-                    <Button 
-                        variant="primary" 
-                        onClick={editVisitID ? handleUpdate : handleSave}
-                    >
-                        {editVisitID ? 'Update Visit' : 'Add Visit'}
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+            {/* Visit History Column */}
+            <Col md={6}>
+              <div className="d-flex justify-content-between align-items-center">
+                <h4>
+                  Visit History
+                  {selectedPatient &&
+                    ` - ${selectedPatient.patientName} ${selectedPatient.patientSurname}`}
+                </h4>
+                <button className="btn btn-primary" onClick={handleShow}>
+                  + Add Visit
+                </button>
+              </div>
 
-            {/* Delete Confirmation Modal */}
-            <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
-              <Modal.Header closeButton>
-                <Modal.Title>Confirm Delete</Modal.Title>
-              </Modal.Header>
-              <Modal.Body>
-                <p>Are you sure you want to delete this visit record? This action cannot be undone.</p>
-              </Modal.Body>
-              <Modal.Footer>
-                <Button variant="secondary" onClick={() => setShowDeleteModal(false)}>
-                  Cancel
-                </Button>
-                <Button variant="danger" onClick={() => handleDelete(deleteVisitID)}>
-                  Delete
-                </Button>
-              </Modal.Footer>
-            </Modal>
-        </Fragment>
-    )
+              <Table striped bordered hover>
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Date</th>
+                    <th>Diagnosis</th>
+                    <th>Treatment</th>
+                    <th colSpan="2" className="text-center">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {visits && visits.length > 0 ? (
+                    visits.map((visit, index) => (
+                      <tr key={index}>
+                        <td>{index + 1}</td>
+                        <td>{new Date(visit.visitDate).toLocaleString()}</td>
+                        <td>{visit.diagnosis || "N/A"}</td>
+                        <td>{visit.treatment || "N/A"}</td>
+                        <td>
+                          <button
+                            className="btn btn-warning"
+                            onClick={() => handleEdit(visit.visitId)}
+                          >
+                            Edit
+                          </button>
+                        </td>
+                        <td>
+                          <button
+                            className="btn btn-danger"
+                            onClick={() => confirmDelete(visit.visitId)}
+                          >
+                            Delete
+                          </button>
+                        </td>
+                      </tr>
+                    ))
+                  ) : (
+                    <tr>
+                      <td colSpan="5" className="text-center">
+                        {selectedPatient
+                          ? "No visits found for this patient"
+                          : "Select a patient to view visits"}
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </Table>
+            </Col>
+          </Row>
+        </Container>
+
+        {/* Add/Edit Visit Modal */}
+        <Modal show={show} onHide={handleClose}>
+          <Modal.Header closeButton>
+            <Modal.Title>
+              {editVisitID ? "Edit Visit" : "Add Visit"}
+              {selectedPatient &&
+                ` - ${selectedPatient.patientName} ${selectedPatient.patientSurname}`}
+            </Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <Row>
+              <Col>
+                <label>Diagnosis</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder="Enter diagnosis..."
+                  value={editVisitID ? editDiagnosis : diagnosis}
+                  onChange={(e) =>
+                    editVisitID
+                      ? setEditDiagnosis(e.target.value)
+                      : setDiagnosis(e.target.value)
+                  }
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <label>Treatment</label>
+                <textarea
+                  className="form-control"
+                  rows="3"
+                  placeholder="Enter treatment..."
+                  value={editVisitID ? editTreatment : treatment}
+                  onChange={(e) =>
+                    editVisitID
+                      ? setEditTreatment(e.target.value)
+                      : setTreatment(e.target.value)
+                  }
+                />
+              </Col>
+            </Row>
+            <Row>
+              <Col>
+                <small className="text-muted">
+                  Visit will be recorded with current date/time:{" "}
+                  {new Date().toLocaleString()}
+                </small>
+              </Col>
+            </Row>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button variant="secondary" onClick={handleClose}>
+              Close
+            </Button>
+            <Button
+              variant="primary"
+              onClick={editVisitID ? handleUpdate : handleSave}
+            >
+              {editVisitID ? "Update Visit" : "Add Visit"}
+            </Button>
+          </Modal.Footer>
+        </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              Are you sure you want to delete this visit record? This action
+              cannot be undone.
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleDelete(deleteVisitID)}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
+        </Modal>
+      </Fragment>
+    );
 }
 
 export default DoctorCRUD;
