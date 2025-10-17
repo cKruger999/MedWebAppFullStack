@@ -1,5 +1,6 @@
 import React,{useState, useEffect, Fragment} from "react";
 import { toast, ToastContainer } from "react-toastify"; 
+import { Dropdown } from "react-bootstrap";
 import Table from 'react-bootstrap/Table';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import axios from "axios";
@@ -13,11 +14,13 @@ const AdminCRUD = () =>
 {
     const [token, setToken] = useState([])
     const [data, setData] = useState([])
-    const [selectedRole, setRole] = useState('')
+    const [roles, setRoles] = useState([]);
+    const [selectedRole, setSelectedRole] = useState("Select Role");
     useEffect(() => 
     {
         setToken(localStorage.getItem("token"))
         getUserData();
+        getRolesData();
     },[token]
     )
    
@@ -26,7 +29,7 @@ const AdminCRUD = () =>
     {
         const token = localStorage.getItem('token');
 
-        axios.get('https://localhost:7108/api/Admin/Users-With-Roles', {
+        axios.get('https://localhost:7108/api/Admin/Get-All-Users', {
         headers: {
             Authorization: `Bearer ${token}`
         }
@@ -35,9 +38,23 @@ const AdminCRUD = () =>
         .catch((error) => console.log(error));
     }
 
+    const getRolesData = () =>
+    {
+        const token = localStorage.getItem('token');
+
+        axios.get('https://localhost:7108/api/Admin/Get-Roles', {
+        headers: {
+            Authorization: `Bearer ${token}`
+        }
+        })
+        .then((result) => setRoles(result.data))
+        .catch((error) => console.log(error));
+    }
+
     const [show, setShow] = useState(false);
     const handleshow = () => setShow(true);
     const handleClose = () => setShow(false);
+    const handleSelect = (role) => setSelectedRole(role);
     
 
     const handleEdit = (id) =>
@@ -82,9 +99,14 @@ const AdminCRUD = () =>
     const handleInsert = () =>
     {
         const username = document.getElementById('username').value;
-        const role = document.getElementById('role').value;
+        const role = selectedRole;
         const email = document.getElementById('email').value;
         const password = document.getElementById('password').value;
+
+        if (!selectedRole || !username || !email || !password) {
+            toast.warning("Please fill in all fields.");
+            return;
+        }
 
 
         const FormData = {
@@ -128,11 +150,16 @@ const AdminCRUD = () =>
                     <input id = "username" type="text" placeholder="Enter Name" className="form-control" />
                     </Col>
                     <Col>
-                    <select id = "role" value={selectedRole} onChange={(e) => setRole(e.target.value)}>
-                        <option value="Admin">Admin</option>
-                        <option value="Doctor">Doctor</option>
-                        <option value="Doctor's Assistant">Doctor's Assistant</option>
-                    </select>
+                    <Dropdown onSelect={handleSelect} id = "role">
+                        <Dropdown.Toggle variant="primary">
+                            {selectedRole}
+                        </Dropdown.Toggle>
+                        <Dropdown.Menu>
+                            {roles.map((role, index) => (
+                                <Dropdown.Item key={index} eventKey={role}>{role}</Dropdown.Item>
+                            ))}
+                        </Dropdown.Menu>
+                    </Dropdown>
                     </Col>
                     <Col>
                     <input id = "email" type="text" placeholder="Enter Email" className="form-control" />

@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedWebApp.Controllers
 {
@@ -54,7 +55,7 @@ namespace MedWebApp.Controllers
             }
         }
 
-        [HttpGet("Users-With-Roles")]
+        [HttpGet("Get-All-Users")]
         public async Task<IActionResult> GetAllUsersWithRoles()
         {
             var users = _userManager.Users.ToList();
@@ -73,6 +74,13 @@ namespace MedWebApp.Controllers
             }
 
             return Ok(userList);
+        }
+
+        [HttpGet("Get-Roles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+            return Ok(roles);
         }
 
         [HttpDelete("Delete-Users")]
