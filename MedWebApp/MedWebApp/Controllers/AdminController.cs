@@ -21,6 +21,7 @@ namespace MedWebApp.Controllers
             _roleManager = roleManager;
             _configuration = configuration;
         }
+
         [HttpPost]
         public async Task<IActionResult> Register([FromBody] User registerUser, string role)
         {
@@ -53,7 +54,7 @@ namespace MedWebApp.Controllers
             }
         }
 
-        [HttpGet("users-with-roles")]
+        [HttpGet("Users-With-Roles")]
         public async Task<IActionResult> GetAllUsersWithRoles()
         {
             var users = _userManager.Users.ToList();
@@ -74,7 +75,7 @@ namespace MedWebApp.Controllers
             return Ok(userList);
         }
 
-        [HttpDelete("Delte-users")]
+        [HttpDelete("Delete-Users")]
         public async Task<IActionResult> DeleteUser(string id)
         {
             var user = await _userManager.FindByIdAsync(id);
