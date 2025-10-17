@@ -60,6 +60,18 @@ namespace MedWebApp.Controllers
             _dbContext.SaveChanges();
             return Ok(visitRecord);
         }
+        [HttpDelete]
+        public IActionResult DeleteVisitRecord(int id)
+        {
+            var visitRecord = _dbContext.VisitRecords.Find(id);
+            if (visitRecord == null)
+            {
+                return NotFound();
+            }
+            _dbContext.VisitRecords.Remove(visitRecord);
+            _dbContext.SaveChanges();
+            return Ok(visitRecord);
+        }
 
     }
 }
