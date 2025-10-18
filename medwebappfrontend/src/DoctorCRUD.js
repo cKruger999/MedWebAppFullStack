@@ -173,7 +173,7 @@ const DoctorCRUD = () => {
       if(!id) return;
       const url = 'https://localhost:7108/api/Visit/DeleteVisit/' + deleteVisitID;
 
-      axios.delete(url)
+      axios.delete(url,
       .then((result) => {
           if (result.status === 200) {
               toast.success('Visit deleted successfully!');

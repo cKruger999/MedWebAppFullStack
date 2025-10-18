@@ -127,7 +127,7 @@ const AdminCRUD = () =>
         })
         .then((result) => {
             console.log(result.data);
-            getUserData(); // refresh table
+            getUserData();
             toast.success("User Successfully Created!");
         })
         .catch((error) => {
