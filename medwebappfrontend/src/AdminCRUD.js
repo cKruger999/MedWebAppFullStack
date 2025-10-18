@@ -9,9 +9,11 @@ import Modal from 'react-bootstrap/Modal';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
+import { useNavigate} from 'react-router-dom';
 
 const AdminCRUD = () => 
 {
+    const navigate = useNavigate();
     const [token, setToken] = useState([])
     const [data, setData] = useState([])
     const [roles, setRoles] = useState([]);
@@ -133,12 +135,22 @@ const AdminCRUD = () =>
             toast.error("User Failed To Create!");
         });
     }
+        const handleLogOut = () =>
+    {
+        localStorage.removeItem("token");
+        navigate("/", {replace: true});
+    }
 
 
 
     return(
         <Fragment>
-        <h1>Welcome to Admin's Page!</h1>
+        <div className='d-flex justify-content-between align-items-center mb-4 ps-4'>
+            <h1>Welcome to Admin's Page!</h1>
+                <div className="text-end mb-3">
+                    <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
+                </div>
+        </div>
             <Container>
             <br/>
                 <Row>
