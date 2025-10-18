@@ -4,10 +4,11 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace MedWebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+    
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -52,6 +53,51 @@ namespace MedWebApp.Controllers
             {
                 return StatusCode(StatusCodes.Status500InternalServerError, new Response { Status = "Error", Message = "This Role Does Not Exist!" });
             }
+        }
+        [HttpGet]
+        [Route("GetAllUsers")]
+        public async Task<IActionResult> GetAllUsersWithRoles()
+        {
+            var users = _userManager.Users.ToList();
+            var userList = new List<object>();
+
+            foreach (var user in users)
+            {
+                var roles = await _userManager.GetRolesAsync(user);
+                userList.Add(new
+                {
+                    user.Id,
+                    user.UserName,
+                    user.Email,
+                    Roles = roles
+                });
+            }
+
+            return Ok(userList);
+        }
+        [HttpGet]
+        [Route("GetRoles")]
+        public async Task<IActionResult> GetRoles()
+        {
+            var roles = await _roleManager.Roles.Select(r => r.Name).ToListAsync();
+            return Ok(roles);
+        }
+
+        [HttpDelete("Delete-Users")]
+        public async Task<IActionResult> DeleteUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+
+            if (user == null)
+            {
+                return NotFound(new Response { Status = "Error", Message = "User not found." });
+            }
+
+            var result = await _userManager.DeleteAsync(user);
+
+
+            return Ok(user);
+
         }
     }
 }

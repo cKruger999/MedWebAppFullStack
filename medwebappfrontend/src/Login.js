@@ -34,7 +34,8 @@ const LoginPage = () => {
 
             const roleRoutes = {
                 "Doctor's Assistant": "/PatientCRUD",
-                "Doctor" : "/DoctorCRUD"
+                "Doctor" : "/DoctorCRUD",
+                "Admin" : "/AdminCRUD"
             }
             const route = roleRoutes[role] || "/";
             navigate(route, {replace: true});

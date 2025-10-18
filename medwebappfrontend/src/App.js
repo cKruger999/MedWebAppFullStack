@@ -3,6 +3,7 @@ import ProtectedRoute from './ProtectedRoute';
 import PatientCRUD from './PatientCRUD';
 import LoginPage from './Login';
 import DoctorCRUD from './DoctorCRUD';
+import AdminCRUD from './AdminCRUD';
 
 function App() {
     return (
@@ -23,6 +24,14 @@ function App() {
                     element={
                         <ProtectedRoute allowedRoles={["Doctor"]}>
                             <DoctorCRUD />
+                        </ProtectedRoute>
+                    } 
+                />
+                <Route 
+                    path="/AdminCRUD" 
+                    element={
+                        <ProtectedRoute allowedRoles={["Admin"]}>
+                            <AdminCRUD />
                         </ProtectedRoute>
                     } 
                 />
