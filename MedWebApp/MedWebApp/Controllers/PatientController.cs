@@ -100,13 +100,15 @@ namespace MedWebApp.Controllers
         {
             if (string.IsNullOrWhiteSpace(searchTerm))
                 return BadRequest("Search term is required");
-            var lowerTerm = searchTerm.ToLower();
+
+            searchTerm = searchTerm.ToLower();
+
             var patients = dbContext.Patients
                 .Where(p =>
-                    p.PatientId.ToString().Contains(lowerTerm) ||
-                    p.PatientName.Contains(lowerTerm) ||
-                    p.PatientSurname.Contains(lowerTerm) ||
-                    p.PatientUsername.Contains(lowerTerm))
+                    p.PatientId.ToString().Contains(searchTerm) ||
+                    p.PatientName.Contains(searchTerm) ||
+                    p.PatientSurname.Contains(searchTerm) ||
+                    p.PatientUsername.Contains(searchTerm))
                 .ToList();
 
             return Ok(patients);

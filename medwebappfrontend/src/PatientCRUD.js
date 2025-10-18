@@ -57,12 +57,7 @@ const  MedApp = () =>
 
     const getPatientData = () =>
     {
-        const token = localStorage.getItem('token');
-        axios.get('https://localhost:7108/api/Patient/GetPatients',{
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
-        })
+        axios.get('https://localhost:7108/api/Patient/GetPatients')
         .then((result) =>
         {setPatients(result.data)})
         .catch((error)=>{
@@ -83,11 +78,7 @@ const  MedApp = () =>
             "hasMedicalAid": hasMedicalAid,
             "medicalAidCompany": medicalAidCompany
         }
-        axios.post(url, data, 
-        {   headers: {
-            Authorization: `Bearer ${token}`
-        }
-        })
+        axios.post(url, data)
         .then((result)=>{
             getPatientData() 
             clear();
@@ -126,13 +117,7 @@ const  MedApp = () =>
     {
         //alert(id);
         handleShowEdit();
-        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        }
-        )
+        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id)
         .then((result) =>
         {
             setEditPatientID(result.data.patientId)
@@ -153,17 +138,12 @@ const  MedApp = () =>
     }
     const handleDelete = (id) =>
     {
-        if(window.confirm("Are you sure you want to delete this patient?") == true)
+        if(window.confirm("Are you sure you want to delete this patient?") === true)
         {
             const url = 'https://localhost:7108/api/Patient/DeletePatient/' + id;
-            axios.delete(url,
-            {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
+            axios.delete(url)
             .then((result) =>{
-                if(result.status == 200)
+                if(result.status === 200)
                 {
                     toast.success('Patient Successfully Deleted!');
                     getPatientData();
@@ -194,13 +174,9 @@ const  MedApp = () =>
             "hasMedicalAid": editHasMedicalAid,
             "medicalAidCompany": editMedicalAidCompany
         }
-        axios.put(url, data, 
-        {   headers: {
-            Authorization: `Bearer ${token}`
-        }   
-        })   
+        axios.put(url, data)
         .then((result) =>{
-            if(result.status == 200)
+            if(result.status === 200)
             {
                 getPatientData()
                 clear();
@@ -211,17 +187,13 @@ const  MedApp = () =>
         })
         
     }
-    const searchPatients = () => {
+        const searchPatients = () => {
         if (!searchTerm.trim()) {
             setPatients([]);
             return;
         }
 
-        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm,
-        {    headers: {
-            Authorization: `Bearer ${token}`
-        }
-        })
+        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm)
         .then((result) => {
             setPatients(result.data);
             if(result.data.length === 0) {
