@@ -39,7 +39,12 @@ const DoctorCRUD = () => {
     useEffect(() => {getPatients()}, []);
 
     const getPatients = () => {
-        axios.get('https://localhost:7108/api/Patient/GetPatients')
+        const token = localStorage.getItem('token');
+        axios.get('https://localhost:7108/api/Patient/GetPatients', {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result) => {
             setPatients(result.data);
         })
@@ -83,7 +88,12 @@ const DoctorCRUD = () => {
 
 
     const getPatientVisits = (patientId) => {
-        axios.get('https://localhost:7108/api/Visit/GetHistory/' + patientId)
+        const token = localStorage.getItem('token');
+        axios.get('https://localhost:7108/api/Visit/GetHistory/' + patientId, {
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result) => {
             setVisits(result.data);
         })
@@ -105,8 +115,13 @@ const DoctorCRUD = () => {
             "diagnosis": diagnosis,
             "treatment": treatment
         }
-
-        axios.post(url, data)
+        const token = localStorage.getItem('token');
+        axios.post(url, data, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
         .then((result) => {
             getPatientVisits(selectedPatient.patientId);
             clear();
@@ -143,7 +158,13 @@ const DoctorCRUD = () => {
             "diagnosis": editDiagnosis,
             "treatment": editTreatment
         }
-        axios.put(url, data)
+        const token = localStorage.getItem('token');
+        axios.put(url, data, {
+            headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
         .then((result) => {
             if (result.status === 200) {
                 getPatientVisits(selectedPatient.patientId);
@@ -172,8 +193,14 @@ const DoctorCRUD = () => {
    const handleDelete = (id) => {
       if(!id) return;
       const url = 'https://localhost:7108/api/Visit/DeleteVisit/' + deleteVisitID;
+      const token = localStorage.getItem('token');
 
-      axios.delete(url)
+      axios.delete(url, {
+        headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+        }
+      })
       .then((result) => {
           if (result.status === 200) {
               toast.success('Visit deleted successfully!');
