@@ -14,40 +14,79 @@ import { useNavigate} from 'react-router-dom';
 const AdminCRUD = () => 
 {
     const navigate = useNavigate();
-    const [token, setToken] = useState([])
+
+    const [showEdit, setShowEdit] = useState(false);
+    const handleCloseEdit = () => setShowEdit(false);
+    const handleShowEdit = () => setShowEdit(true);
+    
+    const [showAdd, setShowAdd] = useState(false);
+    const handleCloseAdd = () => setShowAdd(false);
+    const handleShowAdd = () => setShowAdd(true);
+    
     const [data, setData] = useState([])
     const [roles, setRoles] = useState([]);
+
+    const [username, setUsername] = useState('');
+    const [emailAddress, setEmailAddress] = useState('');
+    const [password, setPassword] = useState('');
+    const [role, setRole] = useState('');
+
+    const [editUsername, setEditUsername] = useState('');
+    const [editEmailAddress, setEditEmailAddress] = useState('');
+    const [editPassword, setEditPassword] = useState('');
+    const [editRole, setEditRole] = useState('');
+
     const [selectedRole, setSelectedRole] = useState("Select Role");
+    
+    const [token, setToken] = useState([]);
+
     useEffect(() => 
     {
         setToken(localStorage.getItem("token"))
         getUserData();
         getRolesData();
-    },[token]
-    )
+    }
+    ,[token])
    
+    const clear = () => 
+    {
+        setUsername('');
+        setEmailAddress('');
+        setPassword('');
+        setRole('');
+
+        setEditUsername('');
+        setEditEmailAddress('');
+        setEditPassword('');
+        setEditRole('');
+    }
+
 
     const getUserData = () =>
     {
         const token = localStorage.getItem('token');
 
-        axios.get('https://localhost:7108/api/Admin/GetAllUsers', {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+        axios.get('https://localhost:7108/api/Admin/GetAllUsers', 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         })
         .then((result) => setData(result.data))
         .catch((error) => console.log(error));
     }
 
-        const getRolesData = () =>
+    const getRolesData = () =>
     {
         const token = localStorage.getItem('token');
 
-        axios.get('https://localhost:7108/api/Admin/GetRoles', {
-        headers: {
-            Authorization: `Bearer ${token}`
-        }
+        axios.get('https://localhost:7108/api/Admin/GetRoles', 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
         })
         .then((result) => setRoles(result.data))
         .catch((error) => console.log(error));
@@ -58,14 +97,106 @@ const AdminCRUD = () =>
     const handleClose = () => setShow(false);
     const handleSelect = (role) => setSelectedRole(role);
     
+    const handleAdd = () =>
+    {
+        handleShowAdd();
+    }
 
     const handleEdit = (id) =>
     {
-        handleshow();
-        
+        const token = localStorage.getItem('token');
 
+        handleShowEdit();
+        axios.get('https://localhost:7108/api/Admin/GetUser/' + id, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((result) =>
+        {
+            setEditUsername(result.data.userName)
+            setEditEmailAddress(result.data.email);
+            setEditRole(result.data.roles);
+        })
+        .catch((error)=>
+        {
+            console.log(error)
+        })
     }
-        
+       
+    const handleInsert = () =>
+    {
+        if (!username || !emailAddress || !password)
+        {
+            toast.warning("Please fill in all fields.");
+            return;
+        }
+        else if (role === "Select Role") 
+        {
+            toast.warning("Please select a role.");
+            return;
+        }
+
+        const token = localStorage.getItem('token');
+
+        const newUserData = {
+            "username": username,
+            "emailAddress": emailAddress,
+            "password": password,
+            "role": role
+        }
+
+        console.log(newUserData);
+
+        axios.post('https://localhost:7108/api/Admin/RegisterUser?role='+role, newUserData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((result) => {
+            console.log(result.data);
+            getUserData();
+            clear();
+            toast.success('User Successfully Created!');
+        })
+        .catch((error) => {
+            console.log(error);
+            toast.error('Failed To Create User!');
+        });
+    }
+
+    const handleUpdate = (id) =>
+    {
+        const token = localStorage.getItem('token');
+
+        const updatedUserData = {
+            "username": editUsername,
+            "emailAddress": editEmailAddress,
+            "role": editRole,
+        }
+
+        axios.put('https://localhost:7108/api/Admin/UpdateUser/' + id, updatedUserData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((result) =>{
+            console.log(result.data);
+            getUserData();
+            clear();
+            toast.success('User Successfully Updated!');
+        })
+        .catch((error)=>{
+            toast.error(error);
+            toast.success('Failed To Update User!');
+        })
+    }
 
     const handleDelete = (id) =>
     {
@@ -73,7 +204,7 @@ const AdminCRUD = () =>
         {
             const token = localStorage.getItem('token');
 
-            axios.delete('https://localhost:7108/api/Admin/Delete-Users?id='+ id,
+            axios.delete('https://localhost:7108/api/Admin/DeleteUser?id='+ id, 
             {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -83,106 +214,40 @@ const AdminCRUD = () =>
             .then((result) => {
                 console.log(result.data);
                 getUserData();
-                toast.success("User Successfully Deleted!");
+                toast.success('User Successfully Deleted!');
             })
             .catch((error) => {
                 console.log(error);
+                toast.error('Failed To Delete User!');
             });
         }
     }
 
-    const handleUpdate = (id) =>
-    {
-
-    }
-
-    const handleInsert = () =>
-    {
-        const username = document.getElementById('username').value;
-        const role = selectedRole;
-        const email = document.getElementById('email').value;
-        const password = document.getElementById('password').value;
-
-        if (!selectedRole || !username || !email || !password) {
-            toast.warning("Please fill in all fields.");
-            return;
-        }
-
-
-        const FormData = {
-            Username: username,
-            EmailAddress: email,
-            Password: password,
-            role: role
-        }
-
-
-        axios.post('https://localhost:7108/api/Admin/RegisterUser?role='+role,
-        FormData,
-        {
-            headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json'
-            }
-        })
-        .then((result) => {
-            console.log(result.data);
-            getUserData();
-            toast.success("User Successfully Created!");
-        })
-        .catch((error) => {
-            console.log(error);
-            toast.error("User Failed To Create!");
-        });
-    }
-        const handleLogOut = () =>
+    const handleLogOut = () =>
     {
         localStorage.removeItem("token");
         navigate("/", {replace: true});
     }
 
 
-
     return(
         <Fragment>
-        <div className='d-flex justify-content-between align-items-center mb-4 ps-4'>
-            <h1>Welcome to Admin's Page!</h1>
-                <div className="text-end mb-3">
-                    <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
-                </div>
-        </div>
+            <div className='d-flex justify-content-between align-items-center mb-4 ps-4'>
+                <h1>Welcome to Admin's Page!</h1>
+                    <div className="text-end mb-3">
+                        <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
+                    </div>
+            </div>
             <Container>
-            <br/>
-                <Row>
-                    <Col>
-                    <input id = "username" type="text" placeholder="Enter Name" className="form-control" />
-                    </Col>
-                    <Col>
-                    <Dropdown onSelect={handleSelect} id = "role">
-                        <Dropdown.Toggle variant="primary">
-                            {selectedRole}
-                        </Dropdown.Toggle>
-                        <Dropdown.Menu>
-                            {roles.map((role, index) => (
-                                <Dropdown.Item key={index} eventKey={role}>{role}</Dropdown.Item>
-                            ))}
-                        </Dropdown.Menu>
-                    </Dropdown>
-                    </Col>
-                    <Col>
-                    <input id = "email" type="text" placeholder="Enter Email" className="form-control" />
-                    </Col>
-                    <Col>
-                    <input id = "password" type="text" placeholder="Enter Password" className="form-control" />
-                    </Col>
-                    <Col>
-                    <button variant="btn btn-primary" onClick={handleInsert}>Submit</button>
-                    </Col>
-                </Row>
-            <br/>
+                <br/>
+                <div className='d-flex justify-content-between align-items-center'>
+                    <h3>Users</h3>
+                        <div className="text-end mb-3">
+                            <button className='btn btn-primary me-5' onClick={handleAdd} >Add User</button>
+                        </div>
+                </div>
             </Container>
-           
-                <Table striped bordered hover>
+            <Table striped bordered hover>
                 <thead>
                     <tr>
                         <th>#</th>
@@ -190,26 +255,26 @@ const AdminCRUD = () =>
                         <th>Username</th>
                         <th>Email</th>
                         <th>Roles</th>
+                        <th>Actions</th>
                     </tr>
                 </thead>
-
                 <tbody>
                 {
                     data && data.length > 0 ?
                     data.map((item, index) => 
                     {
                         return( 
-                    <tr key={index}>
-                        <td>{index + 1}</td>
-                        <td>{item.id}</td>
-                        <td>{item.userName}</td>
-                        <td>{item.email}</td>
-                        <td>{item.roles}</td>
-                        <td colSpan={2}>
-                            <button className= "btn btn-secondary" onClick={() => handleUpdate(item.id)}>Update</button>
-                            <button className= "btn btn-danger" onClick={() => handleDelete(item.id)}>Delete</button>
-                        </td>
-                    </tr>)
+                        <tr key={index}>
+                            <td>{index + 1}</td>
+                            <td>{item.id}</td>
+                            <td>{item.userName}</td>
+                            <td>{item.email}</td>
+                            <td>{item.roles}</td>
+                            <td>
+                                <button className= "btn btn-secondary" onClick={() => handleEdit(item.id)}>Edit</button>
+                                <button className= "btn btn-danger" onClick={() => handleDelete(item.id)}>Delete</button>
+                            </td>
+                        </tr>)
                     }) : (
                     <tr>
                         <td colSpan={7} className="text-center">Loading...</td>
@@ -218,16 +283,85 @@ const AdminCRUD = () =>
                 }
             
                 </tbody>
-                </Table>
-            <Modal show={show} onHide={handleClose}>
+            </Table>
+            <Modal show={showAdd} onHide={handleCloseAdd}>
                 <Modal.Header closeButton>
-                <Modal.Title>Edit user</Modal.Title>
+                    <Modal.Title>Add User</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
-
+                    <Row>
+                        <input type="text" placeholder="Enter Name" className="form-control" 
+                        value={username} onChange={(e) => setUsername(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <Dropdown onSelect={(role) => setRole(role)}>
+                            <Dropdown.Toggle variant="primary">
+                                {role || 'Select Role'}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {roles.map((role, index) => (
+                                    <Dropdown.Item key={index} eventKey={role}>
+                                        {role}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" placeholder="Enter Email" className="form-control" 
+                        value={emailAddress} onChange={(e) => setEmailAddress(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" placeholder="Enter Password" className="form-control" 
+                        value={password} onChange={(e) => setPassword(e.target.value)}/>
+                    </Row>
                 </Modal.Body>
                 <Modal.Footer>
-                <Button variant="secondary" onClick={handleClose}>
+                    <Button variant="secondary" onClick={handleCloseAdd}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleInsert}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            
+            <Modal show={showEdit} onHide={handleCloseEdit}>
+                <Modal.Header closeButton>
+                <Modal.Title>Edit User</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <input type="text" placeholder="Enter Name" className="form-control" 
+                        value={editUsername} onChange={(e) => setEditUsername(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <Dropdown onSelect={(editRole) => setEditRole(editRole)}>
+                            <Dropdown.Toggle variant="primary">
+                                {editRole || role || 'Select Role'}
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {roles.map((role, index) => (
+                                    <Dropdown.Item key={index} eventKey={role}>
+                                        {role}
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </Row>
+                    
+                    <br/>
+                    <Row>
+                        <input type="text" placeholder="Enter Email" className="form-control" 
+                        value={editEmailAddress} onChange={(e) => setEditEmailAddress(e.target.value)}/>
+                    </Row>
+                </Modal.Body>
+                <Modal.Footer>
+                <Button variant="secondary" onClick={handleCloseEdit}>
                     Close
                 </Button>
                 <Button variant="primary" onClick={handleUpdate}>

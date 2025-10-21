@@ -13,13 +13,12 @@ import { Container, Col } from 'react-bootstrap';
 const  MedApp = () =>
 {
     const navigate = useNavigate();
+    
     const [showEdit, setShowEdit] = useState(false);
-
     const handleCloseEdit = () => setShowEdit(false);
     const handleShowEdit = () => setShowEdit(true);
     
     const [showAdd, setShowAdd] = useState(false);
-
     const handleCloseAdd = () => setShowAdd(false);
     const handleShowAdd = () => setShowAdd(true);
 
@@ -53,21 +52,31 @@ const  MedApp = () =>
     {
         setToken(localStorage.getItem("token"))
         getPatientData();
-    },[])
+    },
+    [])
 
     const getPatientData = () =>
     {
-        axios.get('https://localhost:7108/api/Patient/GetPatients')
-        .then((result) =>
-        {setPatients(result.data)})
-        .catch((error)=>{
-            console.log(error)})
+        const token = localStorage.getItem('token');
+
+        axios.get('https://localhost:7108/api/Patient/GetPatients', 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
+        .then((result) => setPatients(result.data))
+        .catch((error) => console.log(error));
     }
 
     const handleSave = () =>
     {
+        const token = localStorage.getItem('token');
+
         const url = 'https://localhost:7108/api/Patient/AddPatient';
-        const data = {
+
+        const newPatientData = {
             "patientName": patientName,
             "patientSurname": patientSurname,
             "patientUsername": patientUsername,
@@ -78,12 +87,23 @@ const  MedApp = () =>
             "hasMedicalAid": hasMedicalAid,
             "medicalAidCompany": medicalAidCompany
         }
-        axios.post(url, data)
+
+        axios.post(url, newPatientData, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
         .then((result)=>{
             getPatientData() 
             clear();
             toast.success('Patient Successfully Added!');
         })
+        .catch((error) => {
+            console.log(error);
+            toast.error()
+        });
     }
 
     const clear = () =>
@@ -109,15 +129,25 @@ const  MedApp = () =>
         setEditHasMedicalAid('');
         setEditMedicalAidCompany('');
     }
+
     const handleAdd = () =>
     {
         handleShowAdd();
     }
+
     const handleEdit = (id) =>
     {
+        const token = localStorage.getItem('token');
+
         //alert(id);
         handleShowEdit();
-        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id)
+        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id, 
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
         .then((result) =>
         {
             setEditPatientID(result.data.patientId)
@@ -131,39 +161,46 @@ const  MedApp = () =>
             setEditHasMedicalAid(result.data.hasMedicalAid);
             setEditMedicalAidCompany(result.data.medicalAidCompany);
 
-        }).catch((error)=>
+        })
+        .catch((error)=>
         {
             console.log(error)
         })
     }
+    
     const handleDelete = (id) =>
     {
         if(window.confirm("Are you sure you want to delete this patient?") === true)
         {
-            const url = 'https://localhost:7108/api/Patient/DeletePatient/' + id;
-            axios.delete(url)
+            const token = localStorage.getItem('token');
+
+            axios.delete('https://localhost:7108/api/Patient/DeletePatient/' + id, 
+            {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
             .then((result) =>{
                 if(result.status === 200)
                 {
-                    toast.success('Patient Successfully Deleted!');
                     getPatientData();
                     clear();
+                    toast.success('Patient Successfully Deleted!');
                 }
             })
             .catch((error)=>{
                 toast.error(error);
+                toast.error("Failed To Delete Patient!");
             })            
         }
     }
-    const handleLogOut = () =>
-    {
-        localStorage.removeItem("token");
-        navigate("/", {replace: true});
-    }
+
     const handleUpdate = () =>
     {
-        const url = 'https://localhost:7108/api/Patient/UpdatePatient/' + editPatientID;
-        const data = {
+        const token = localStorage.getItem('token');
+
+        const updatedPatientData = {
             "patientName": editPatientName,
             "patientSurname": editPatientSurname,
             "patientUsername" : editPatientUsername,
@@ -174,318 +211,359 @@ const  MedApp = () =>
             "hasMedicalAid": editHasMedicalAid,
             "medicalAidCompany": editMedicalAidCompany
         }
-        axios.put(url, data)
-        .then((result) =>{
-            if(result.status === 200)
-            {
-                getPatientData()
-                clear();
-                toast.success('Patient Updated Successfully!');
+
+        axios.put('https://localhost:7108/api/Patient/UpdatePatient/' + editPatientID, updatedPatientData,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
             }
-        }).catch((error)=>{
-            toast.error(error);
+        })
+        .then((result) =>{
+            getPatientData()
+            clear();
+            toast.success('Patient Updated Successfully!');
+        })
+        .catch((error)=>{
+            console.log(error);
+            toast.error('Failed To Update Patient!');
         })
         
     }
-        const searchPatients = () => {
+
+    const searchPatients = () =>
+    {
         if (!searchTerm.trim()) {
             setPatients([]);
             return;
         }
 
-        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm)
+        const token = localStorage.getItem('token');
+
+        axios.get('https://localhost:7108/api/Patient/SearchPatients?searchTerm=' + searchTerm,
+        {
+            headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+            }
+        })
         .then((result) => {
             setPatients(result.data);
+            
             if(result.data.length === 0) {
                 toast.error('No patients found');
             }
             else
-            toast.success('Found ' + result.data.length + ' patient(s)');
+                toast.success('Found ' + result.data.length + ' patient(s)');
         })
         .catch((error) => {
             console.log(error);
             toast.error('Failed to search patients');
         });
     }
+
+    const handleLogOut = () =>
+    {
+        localStorage.removeItem("token");
+        navigate("/", {replace: true});
+    }
+
+
     return (
-    <Fragment>
-            <ToastContainer/>
-        <br></br>
-        <div className = "ps-4">
-            <div className='d-flex justify-content-between align-items-center mb-4'>
-                <h1>Welcome to Doctor's Assistant Page!</h1>
-                    <div className="text-end mb-3">
-                        <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
-                    </div>
-            </div>
-            <Container className="my-4">
-            <Row className="justify-content-center">
-                <Col md={6}>
-                <div className="d-flex">
-                    <input
-                    type="text"
-                    className="form-control me-2"
-                    placeholder="Search patients by Name, Surname, or Username..."
-                    value={searchTerm}
-                    onChange={(e) => setSearchTerm(e.target.value)}
-                    />
-                    <button className="btn btn-primary" onClick={searchPatients}>
-                    Search
-                    </button>
+        <Fragment>
+                <ToastContainer/>
+            <br></br>
+            <div className = "ps-4">
+                <div className='d-flex justify-content-between align-items-center mb-4'>
+                    <h1>Welcome to Doctor's Assistant Page!</h1>
+                        <div className="text-end mb-3">
+                            <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
+                        </div>
                 </div>
-                </Col>
-            </Row>
-            </Container>
-
-            <div className='d-flex justify-content-between align-items-center'>
-                <h3>Patient Records</h3>
-                    <div className="text-end mb-3">
-                        <button className='btn btn-primary me-5' onClick={handleAdd} >Add Patient</button>
+                <Container className="my-4">
+                <Row className="justify-content-center">
+                    <Col md={6}>
+                    <div className="d-flex">
+                        <input
+                            type="text"
+                            className="form-control me-2"
+                            placeholder="Search patients by Name, Surname, or Username..."
+                            value={searchTerm}
+                            onChange={(e) => setSearchTerm(e.target.value)}
+                        />
+                        <button className="btn btn-primary" onClick={searchPatients}>
+                        Search
+                        </button>
                     </div>
+                    </Col>
+                </Row>
+                </Container>
 
+                <div className='d-flex justify-content-between align-items-center'>
+                    <h3>Patient Records</h3>
+                        <div className="text-end mb-3">
+                            <button className='btn btn-primary me-5' onClick={handleAdd} >Add Patient</button>
+                        </div>
+
+                </div>
             </div>
-        </div>
-        <Modal show={showAdd} onHide={handleCloseAdd}>
-            <Modal.Header closeButton>
-                <Modal.Title>Add Patient</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Name" 
-                    value={patientName} onChange={(e) => setPatientName(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Surname" 
-                    value={patientSurname} onChange={(e) => setPatientSurname(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Username" 
-                    value={patientUsername} onChange={(e) => setPatientUsername(e.target.value)}/>
-                </Row>
-                <Row>
-                    <p>Gender</p>
-                    <label className ="me-3">
-                            <input 
-                                type="radio"
-                                name="male" 
-                                value="Male" 
-                                checked={gender === "Male"}
-                                onChange = {(e) => setGender(e.target.value)}
-                            /> {" "}Male
-                        </label>
-                        <label>
-                            <input 
-                                type="radio"
-                                name="female" 
-                                value="Female"
-                                checked={gender === "Female"}
-                                onChange = {(e) => setGender(e.target.value)} 
-                            /> {" "} Female
-                        </label>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Home Address" 
-                    value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Email Address" 
-                    value={emailAddress} onChange={(e) => setEmailAddress(e.target.value)} />
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter PhoneNumber"  
-                    value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
-                </Row>
-                <Row>
-                    <p>Has Medical Aid?</p>
-                    <label className ="me-3">
-                            <input 
-                                type="radio"
-                                name="hasMedicalAid" 
-                                value="true" 
-                                checked={hasMedicalAid === true}
-                                onChange={() => {setHasMedicalAid(true);
-                                    setMedicalAidCompany('');
-                                }}
-                            /> {" "} Yes
-                        </label>
-                        <label>
-                            <input 
-                                type="radio"
-                                name="hasMedicalAid" 
-                                value="false" 
-                                checked={hasMedicalAid === false}
-                                onChange={() => {setHasMedicalAid(false);
-                                    setMedicalAidCompany("");}
-                                }
-                            /> No
-                        </label>
-                </Row>
-                {hasMedicalAid && (<Row>
-                    <select type="text" className="form-control" placeholder="Medical Aid Company" 
-                    value={medicalAidCompany} onChange={(e) => setMedicalAidCompany(e.target.value)} >
-                        <option value="">---Select Medical Aid---</option>
-                        <option value="Discovery Health">Discovery</option>
-                        <option value="Bonitas">Bonitas</option>
-                        <option value="Momentum Health">Momentum Health</option>
-                    </select>
-                </Row> )}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseAdd}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleSave}>
-                    Save Changes
-                </Button>
-            </Modal.Footer>
-        </Modal>
-        <Table striped bordered hover>
-            <thead>
-                <tr>
-                <th>#</th>
-                <th>Name</th>
-                <th>Surname</th>
-                <th>Username</th>
-                <th>Gender</th>
-                <th>Address</th>
-                <th>Email</th>
-                <th>PhoneNumber</th>
-                <th>Has Medical Aid</th>
-                <th>Medical Aid Company</th>
-                <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-            {
-                patients && patients.length > 0 ?
-                patients.map((items, index) =>
+            <Modal show={showAdd} onHide={handleCloseAdd}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Add Patient</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Name" 
+                        value={patientName} onChange={(e) => setPatientName(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Surname" 
+                        value={patientSurname} onChange={(e) => setPatientSurname(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Username" 
+                        value={patientUsername} onChange={(e) => setPatientUsername(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <p>Gender</p>
+                        <label className ="me-3">
+                                <input 
+                                    type="radio"
+                                    name="male" 
+                                    value="Male" 
+                                    checked={gender === "Male"}
+                                    onChange = {(e) => setGender(e.target.value)}
+                                /> {" "}Male
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio"
+                                    name="female" 
+                                    value="Female"
+                                    checked={gender === "Female"}
+                                    onChange = {(e) => setGender(e.target.value)} 
+                                /> {" "} Female
+                            </label>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Home Address" 
+                        value={homeAddress} onChange={(e) => setHomeAddress(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Email Address" 
+                        value={emailAddress} onChange={(e) => setEmailAddress(e.target.value)} />
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter PhoneNumber"  
+                        value={phoneNumber} onChange={(e) => setPhoneNumber(e.target.value)} />
+                    </Row>
+                    <br/>
+                    <Row>
+                        <p>Has Medical Aid?</p>
+                        <label className ="me-3">
+                                <input 
+                                    type="radio"
+                                    name="hasMedicalAid" 
+                                    value="true" 
+                                    checked={hasMedicalAid === true}
+                                    onChange={() => {setHasMedicalAid(true);
+                                        setMedicalAidCompany('');
+                                    }}
+                                /> {" "} Yes
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio"
+                                    name="hasMedicalAid" 
+                                    value="false" 
+                                    checked={hasMedicalAid === false}
+                                    onChange={() => {setHasMedicalAid(false);
+                                        setMedicalAidCompany("");}
+                                    }
+                                /> No
+                            </label>
+                    </Row>
+                    <br/>
+                    {hasMedicalAid && (<Row>
+                        <select type="text" className="form-control" placeholder="Medical Aid Company" 
+                        value={medicalAidCompany} onChange={(e) => setMedicalAidCompany(e.target.value)} >
+                            <option value="">---Select Medical Aid---</option>
+                            <option value="Discovery Health">Discovery</option>
+                            <option value="Bonitas">Bonitas</option>
+                            <option value="Momentum Health">Momentum Health</option>
+                        </select>
+                    </Row> )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseAdd}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleSave}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+            <Table striped bordered hover>
+                <thead>
+                    <tr>
+                    <th>#</th>
+                    <th>Name</th>
+                    <th>Surname</th>
+                    <th>Username</th>
+                    <th>Gender</th>
+                    <th>Address</th>
+                    <th>Email</th>
+                    <th>PhoneNumber</th>
+                    <th>Has Medical Aid</th>
+                    <th>Medical Aid Company</th>
+                    <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
                 {
-                    return(
-                        <tr key = {index}>
-                        <td>{index + 1}</td>
-                        <td>{items.patientName}</td>
-                        <td>{items.patientSurname}</td>
-                        <td>{items.patientUsername}</td>
-                        <td>{items.gender}</td>
-                        <td>{items.homeAddress}</td>
-                        <td>{items.emailAddress}</td>
-                        <td>{items.phoneNumber}</td>
-                        <td>{items.hasMedicalAid ? "Yes": "No"}</td>
-                        <td>{items.medicalAidCompany}</td>
-                        <td colSpan={2}>
-                            <button className='btn btn-primary' onClick={() => handleEdit(items.patientId)}>Edit</button> &nbsp;
-                            <button className='btn btn-danger'onClick={() => handleDelete(items.patientId)}>Delete</button>
-                        </td>
-                        </tr>)
-                }) : (
-                        <tr>
-                        <td colSpan="10" className="text-center">Loading...</td>
-                        </tr>
-                    )}
-            
-            </tbody>
-        </Table>
+                    patients && patients.length > 0 ?
+                    patients.map((items, index) =>
+                    {
+                        return(
+                            <tr key = {index}>
+                            <td>{index + 1}</td>
+                            <td>{items.patientName}</td>
+                            <td>{items.patientSurname}</td>
+                            <td>{items.patientUsername}</td>
+                            <td>{items.gender}</td>
+                            <td>{items.homeAddress}</td>
+                            <td>{items.emailAddress}</td>
+                            <td>{items.phoneNumber}</td>
+                            <td>{items.hasMedicalAid ? "Yes": "No"}</td>
+                            <td>{items.medicalAidCompany}</td>
+                            <td colSpan={2}>
+                                <button className='btn btn-primary' onClick={() => handleEdit(items.patientId)}>Edit</button> &nbsp;
+                                <button className='btn btn-danger'onClick={() => handleDelete(items.patientId)}>Delete</button>
+                            </td>
+                            </tr>)
+                    }) : (
+                            <tr>
+                            <td colSpan="10" className="text-center">Loading...</td>
+                            </tr>
+                        )}
+                
+                </tbody>
+            </Table>
 
-        <Modal show={showEdit} onHide={handleCloseEdit}>
-            <Modal.Header closeButton>
-                <Modal.Title>Edit Patient</Modal.Title>
-            </Modal.Header>
-            <Modal.Body>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter ID" 
-                    value={editPatientID} onChange={(e) => setEditPatientID(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Name" 
-                    value={editPatientName} onChange={(e) => setEditPatientName(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Surname" 
-                    value={editPatientSurname} onChange={(e) => setEditPatientSurname(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Username" 
-                    value={editPatientUsername} onChange={(e) => setEditPatientUsername(e.target.value)}/>
-                </Row>
-                <Row>
-                    <p>Gender</p>
-                    <label className ="me-3">
-                            <input 
-                                type="radio"
-                                name="male" 
-                                value="Male" 
-                                checked={editGender === "Male"}
-                                onChange = {(e) => setEditGender(e.target.value)}
-                            /> {" "}Male
-                        </label>
-                        <label>
-                            <input 
-                                type="radio"
-                                name="female" 
-                                value="Female"
-                                checked={editGender === "Female"}
-                                onChange = {(e) => setEditGender(e.target.value)} 
-                            /> {" "} Female
-                        </label>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Home Address" 
-                    value={editHomeAddress} onChange={(e) => setEditHomeAddress(e.target.value)}/>
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter Email Address" 
-                    value={editEmailAddress} onChange={(e) => setEditEmailAddress(e.target.value)} />
-                </Row>
-                <Row>
-                    <input type="text" className="form-control" placeholder="Enter PhoneNumber"  
-                    value={editPhoneNumber} onChange={(e) => setEditPhoneNumber(e.target.value)} />
-                </Row>
-                <Row>
-                    <p>Has Medical Aid?</p>
-                    <label className ="me-3">
-                            <input 
-                                type="radio"
-                                name="hasMedicalAid" 
-                                value="true" 
-                                checked={editHasMedicalAid === true}
-                                onChange={() => {setEditHasMedicalAid(true);
-                                    setEditMedicalAidCompany('');
-                                }}
-                            /> {" "} Yes
-                        </label>
-                        <label>
-                            <input 
-                                type="radio"
-                                name="hasMedicalAid" 
-                                value="false" 
-                                checked={editHasMedicalAid === false}
-                                onChange={() => {setEditHasMedicalAid(false);
-                                    setEditMedicalAidCompany("");}
-                                }
-                            /> No
-                        </label>
-                </Row>
-                {editHasMedicalAid && (<Row>
-                    <select type="text" className="form-control" placeholder="Medical Aid Company" 
-                    value={editMedicalAidCompany} onChange={(e) => setEditMedicalAidCompany(e.target.value)} >
-                        <option value="">---Select Medical Aid---</option>
-                        <option value="Discovery Health">Discovery</option>
-                        <option value="Bonitas">Bonitas</option>
-                        <option value="Momentum Health">Momentum Health</option>
-                    </select>
-                </Row> )}
-            </Modal.Body>
-            <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseEdit}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleUpdate}>
-                    Save Changes
-                </Button>
-            </Modal.Footer>
-        </Modal>
-    </Fragment>
-    
+            <Modal show={showEdit} onHide={handleCloseEdit}>
+                <Modal.Header closeButton>
+                    <Modal.Title>Edit Patient</Modal.Title>
+                </Modal.Header>
+                <Modal.Body>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter ID" 
+                        value={editPatientID} onChange={(e) => setEditPatientID(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Name" 
+                        value={editPatientName} onChange={(e) => setEditPatientName(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Surname" 
+                        value={editPatientSurname} onChange={(e) => setEditPatientSurname(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Username" 
+                        value={editPatientUsername} onChange={(e) => setEditPatientUsername(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <p>Gender</p>
+                        <label className ="me-3">
+                                <input 
+                                    type="radio"
+                                    name="male" 
+                                    value="Male" 
+                                    checked={editGender === "Male"}
+                                    onChange = {(e) => setEditGender(e.target.value)}
+                                /> {" "}Male
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio"
+                                    name="female" 
+                                    value="Female"
+                                    checked={editGender === "Female"}
+                                    onChange = {(e) => setEditGender(e.target.value)} 
+                                /> {" "} Female
+                            </label>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Home Address" 
+                        value={editHomeAddress} onChange={(e) => setEditHomeAddress(e.target.value)}/>
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter Email Address" 
+                        value={editEmailAddress} onChange={(e) => setEditEmailAddress(e.target.value)} />
+                    </Row>
+                    <br/>
+                    <Row>
+                        <input type="text" className="form-control" placeholder="Enter PhoneNumber"  
+                        value={editPhoneNumber} onChange={(e) => setEditPhoneNumber(e.target.value)} />
+                    </Row>
+                    <br/>
+                    <Row>
+                        <p>Has Medical Aid?</p>
+                        <label className ="me-3">
+                                <input 
+                                    type="radio"
+                                    name="hasMedicalAid" 
+                                    value="true" 
+                                    checked={editHasMedicalAid === true}
+                                    onChange={() => {setEditHasMedicalAid(true);
+                                        setEditMedicalAidCompany('');
+                                    }}
+                                /> {" "} Yes
+                            </label>
+                            <label>
+                                <input 
+                                    type="radio"
+                                    name="hasMedicalAid" 
+                                    value="false" 
+                                    checked={editHasMedicalAid === false}
+                                    onChange={() => {setEditHasMedicalAid(false);
+                                        setEditMedicalAidCompany("");}
+                                    }
+                                /> No
+                            </label>
+                    </Row>
+                    <br/>
+                    {editHasMedicalAid && (<Row>
+                        <select type="text" className="form-control" placeholder="Medical Aid Company" 
+                        value={editMedicalAidCompany} onChange={(e) => setEditMedicalAidCompany(e.target.value)} >
+                            <option value="">---Select Medical Aid---</option>
+                            <option value="Discovery Health">Discovery</option>
+                            <option value="Bonitas">Bonitas</option>
+                            <option value="Momentum Health">Momentum Health</option>
+                        </select>
+                    </Row> )}
+                </Modal.Body>
+                <Modal.Footer>
+                    <Button variant="secondary" onClick={handleCloseEdit}>
+                        Close
+                    </Button>
+                    <Button variant="primary" onClick={handleUpdate}>
+                        Save Changes
+                    </Button>
+                </Modal.Footer>
+            </Modal>
+        </Fragment>
     )
 }
 

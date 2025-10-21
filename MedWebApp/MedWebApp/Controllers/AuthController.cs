@@ -28,7 +28,7 @@ namespace MedWebApp.Controllers
         }
 
         [HttpPost]
-        [Route("login")]
+        [Route("LoginUser")]
         public async Task<IActionResult> Login([FromBody] LoginModel loginModel)
         {
             var user = await _userManager.FindByNameAsync(loginModel.Username);

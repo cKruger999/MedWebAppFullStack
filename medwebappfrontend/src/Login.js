@@ -17,7 +17,7 @@ const LoginPage = () => {
             return;
         }
         try {
-            const response = await axios.post('https://localhost:7108/api/Auth/login',{
+            const response = await axios.post('https://localhost:7108/api/Auth/LoginUser',{
                 username: username,
                 password: password,
             });
@@ -30,7 +30,7 @@ const LoginPage = () => {
             const role = decoded["http://schemas.microsoft.com/ws/2008/06/identity/claims/role"];
             console.log(role);
 
-            toast.success("Login successful!");
+            toast.success("Login Successful!");
 
             const roleRoutes = {
                 "Doctor's Assistant": "/PatientCRUD",
