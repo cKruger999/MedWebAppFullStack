@@ -96,7 +96,8 @@ const  MedApp = () =>
             }
         })
         .then((result)=>{
-            getPatientData() 
+            getPatientData();
+            handleCloseAdd();
             clear();
             toast.success('Patient Successfully Added!');
         })
@@ -167,7 +168,6 @@ const  MedApp = () =>
             console.log(error)
         })
     }
-    
     const handleDelete = (id) =>
     {
         if(window.confirm("Are you sure you want to delete this patient?") === true)
@@ -220,7 +220,8 @@ const  MedApp = () =>
             }
         })
         .then((result) =>{
-            getPatientData()
+            getPatientData();
+            handleCloseEdit();
             clear();
             toast.success('Patient Updated Successfully!');
         })

@@ -181,12 +181,10 @@ const DoctorCRUD = () => {
             }
         })
         .then((result) => {
-            if (result.status === 200) {
-                getPatientVisits(selectedPatient.patientId);
-                handleClose();
-                clear();
-                toast.success('Visit Updated Successfully!');
-            }
+            getPatientVisits(selectedPatient.patientId);
+            handleClose();
+            clear();
+            toast.success('Visit Updated Successfully!');
         })
         .catch((error) => {
             toast.error(error);

@@ -31,6 +31,7 @@ const AdminCRUD = () =>
     const [password, setPassword] = useState('');
     const [role, setRole] = useState('');
 
+    const [editId, setEditId] = useState('');
     const [editUsername, setEditUsername] = useState('');
     const [editEmailAddress, setEditEmailAddress] = useState('');
     const [editPassword, setEditPassword] = useState('');
@@ -55,6 +56,7 @@ const AdminCRUD = () =>
         setPassword('');
         setRole('');
 
+        setEditId('');
         setEditUsername('');
         setEditEmailAddress('');
         setEditPassword('');
@@ -106,7 +108,6 @@ const AdminCRUD = () =>
     {
         const token = localStorage.getItem('token');
 
-        handleShowEdit();
         axios.get('https://localhost:7108/api/Admin/GetUser/' + id, 
         {
             headers: {
@@ -116,13 +117,17 @@ const AdminCRUD = () =>
         })
         .then((result) =>
         {
-            setEditUsername(result.data.userName)
+            setEditId(result.data.id);
+            setEditUsername(result.data.userName);
             setEditEmailAddress(result.data.email);
             setEditRole(result.data.roles);
+
+            handleShowEdit();
         })
         .catch((error)=>
         {
             console.log(error)
+            toast.error('Cannot Find User!');
         })
     }
        
@@ -144,13 +149,10 @@ const AdminCRUD = () =>
         const newUserData = {
             "username": username,
             "emailAddress": emailAddress,
-            "password": password,
-            "role": role
+            "password": password
         }
 
-        console.log(newUserData);
-
-        axios.post('https://localhost:7108/api/Admin/RegisterUser?role='+role, newUserData,
+        axios.post('https://localhost:7108/api/Admin/RegisterUser?role=' + role, newUserData,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -158,8 +160,8 @@ const AdminCRUD = () =>
             }
         })
         .then((result) => {
-            console.log(result.data);
             getUserData();
+            handleCloseAdd();
             clear();
             toast.success('User Successfully Created!');
         })
@@ -169,17 +171,18 @@ const AdminCRUD = () =>
         });
     }
 
-    const handleUpdate = (id) =>
+    const handleUpdate = () =>
     {
         const token = localStorage.getItem('token');
 
         const updatedUserData = {
             "username": editUsername,
             "emailAddress": editEmailAddress,
-            "role": editRole,
+            "password": "p"
         }
 
-        axios.put('https://localhost:7108/api/Admin/UpdateUser/' + id, updatedUserData,
+        axios.put('https://localhost:7108/api/Admin/UpdateUser/' + editId + '?newRole=' + editRole, 
+        updatedUserData,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -187,14 +190,14 @@ const AdminCRUD = () =>
             }
         })
         .then((result) =>{
-            console.log(result.data);
             getUserData();
+            handleCloseEdit();
             clear();
             toast.success('User Successfully Updated!');
         })
         .catch((error)=>{
-            toast.error(error);
-            toast.success('Failed To Update User!');
+            console.log(error);
+            toast.error('Failed To Update User!');
         })
     }
 
@@ -328,7 +331,7 @@ const AdminCRUD = () =>
                     </Button>
                 </Modal.Footer>
             </Modal>
-            
+
             <Modal show={showEdit} onHide={handleCloseEdit}>
                 <Modal.Header closeButton>
                 <Modal.Title>Edit User</Modal.Title>
