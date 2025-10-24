@@ -9,6 +9,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate} from 'react-router-dom';
 import { Container, Col } from 'react-bootstrap';
+import image3 from './assets/image3.png'
 
 const  MedApp = () =>
 {
@@ -238,16 +239,29 @@ const  MedApp = () =>
         });
     }
     return (
+    <div className="bg-image" style={{
+        backgroundImage: `url(${image3})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh'
+    }}>
+
     <Fragment>
             <ToastContainer/>
         <br></br>
-        <div className = "ps-4">
-            <div className='d-flex justify-content-between align-items-center mb-4'>
-                <h1>Welcome to Doctor's Assistant Page!</h1>
-                    <div className="text-end mb-3">
-                        <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
+        <div className = "px-5">
+                
+            <Container>
+                <div className='d-flex justify-content-center align-items-center position-relative'>
+                    <div className="border border-4 bg-light py-4">
+                        <h1 className='mx-4'>Welcome to Doctor's Assistant Page!</h1>
                     </div>
-            </div>
+                    <button className='btn btn-danger position-absolute end-0 me-5' onClick={handleLogOut}>Log Out</button>
+                </div>
+            </Container>
+                
             <Container className="my-4">
             <Row className="justify-content-center">
                 <Col md={6}>
@@ -266,7 +280,7 @@ const  MedApp = () =>
                 </Col>
             </Row>
             </Container>
-
+            <Container>
             <div className='d-flex justify-content-between align-items-center'>
                 <h3>Patient Records</h3>
                     <div className="text-end mb-3">
@@ -274,6 +288,7 @@ const  MedApp = () =>
                     </div>
 
             </div>
+            </Container>
         </div>
         <Modal show={showAdd} onHide={handleCloseAdd}>
             <Modal.Header closeButton>
@@ -369,7 +384,9 @@ const  MedApp = () =>
                 </Button>
             </Modal.Footer>
         </Modal>
-        <Table striped bordered hover>
+
+        <Container>
+        <Table striped bordered hover >
             <thead>
                 <tr>
                 <th>#</th>
@@ -415,6 +432,7 @@ const  MedApp = () =>
             
             </tbody>
         </Table>
+        </Container>
 
         <Modal show={showEdit} onHide={handleCloseEdit}>
             <Modal.Header closeButton>
@@ -515,7 +533,7 @@ const  MedApp = () =>
             </Modal.Footer>
         </Modal>
     </Fragment>
-    
+    </div>
     )
 }
 

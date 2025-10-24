@@ -10,6 +10,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate} from 'react-router-dom';
+import image3 from './assets/image3.png'
 
 
 const DoctorCRUD = () => {
@@ -224,18 +225,27 @@ const DoctorCRUD = () => {
  
 
     return (
+      <div className="bg-image" style={{
+        backgroundImage: `url(${image3})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        backgroundAttachment: 'fixed',
+        minHeight: '100vh'
+    }}>
       <Fragment>
         <ToastContainer />
         <br />
-          <div className='d-flex justify-content-between align-items-center mb-4 ps-4'>
-                <h1>Welcome to Doctor's Page!</h1>
-                    <div className="text-end mb-3">
-                        <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
+            <Container >
+                <div className='d-flex justify-content-center align-items-center position-relative'>
+                    <div className="border border-4 bg-light py-4">
+                        <h1 className='mx-4'>Welcome to Doctor's Page!</h1>
                     </div>
-          </div>
-
+                    <button className='btn btn-danger position-absolute end-0' onClick={handleLogOut}>Log Out</button>
+                </div>
+            </Container>
         {/* Search Section */}
-        <Container>
+        <Container className="mt-5">
           <Row>
             <Col>
               <input
@@ -463,6 +473,7 @@ const DoctorCRUD = () => {
           </Modal.Footer>
         </Modal>
       </Fragment>
+      </div>
     );
 }
 
