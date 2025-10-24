@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace MedWebApp.Controllers
 {
-    [Authorize(Roles = "Admin")]
+
     [Route("api/[controller]")]
     [ApiController]
     public class AdminController : ControllerBase
@@ -98,6 +98,62 @@ namespace MedWebApp.Controllers
 
             return Ok(user);
 
+        }
+        [HttpGet]
+        [Route("GetUser/{id}")]
+        public async Task<IActionResult> GetUser(string id)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            var role = await _userManager.GetRolesAsync(user);
+            var userData = new
+            {
+                user.Id,
+                user.UserName,
+                user.Email,
+                Roles = role
+            };
+
+            return Ok(userData);
+        }
+
+        [HttpPut]
+        [Route("UpdateUser/{id}")]
+        public async Task<IActionResult> UpdateUser(string id, [FromBody] User updatedUser, string? newRole = null)
+        {
+            var user = await _userManager.FindByIdAsync(id);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            user.UserName = updatedUser.Username;
+            user.Email = updatedUser.EmailAddress;
+
+            var result = await _userManager.UpdateAsync(user);
+            if (!result.Succeeded)
+            {
+                return StatusCode(StatusCodes.Status500InternalServerError,
+                    new Response { Status = "Error", Message = "Failed to update user details." });
+            }
+
+            if (!string.IsNullOrEmpty(newRole))
+            {
+                if (!await _roleManager.RoleExistsAsync(newRole))
+                {
+                    return BadRequest(new Response { Status = "Error", Message = "Role does not exist." });
+                }
+
+                var currentRoles = await _userManager.GetRolesAsync(user);
+                await _userManager.RemoveFromRolesAsync(user, currentRoles);
+                await _userManager.AddToRoleAsync(user, newRole);
+            }
+
+            return Ok(new Response { Status = "Success", Message = "User updated successfully." });
         }
     }
 }
