@@ -10,6 +10,7 @@ import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import { useNavigate} from 'react-router-dom';
+import Image5 from './assets/Image5.png';
 
 const AdminCRUD = () => 
 {
@@ -233,147 +234,191 @@ const AdminCRUD = () =>
     }
 
 
-    return(
-        <Fragment>
-            <div className='d-flex justify-content-between align-items-center mb-4 ps-4'>
-                <h1>Welcome to Admin's Page!</h1>
-                    <div className="text-end mb-3">
-                        <button className='btn btn-danger me-5' onClick={handleLogOut} >Log Out</button>
-                    </div>
-            </div>
-            <Container>
-                <br/>
-                <div className='d-flex justify-content-between align-items-center'>
-                    <h3>Users</h3>
-                        <div className="text-end mb-3">
-                            <button className='btn btn-primary me-5' onClick={handleAdd} >Add User</button>
-                        </div>
-                </div>
-            </Container>
-            <Table striped bordered hover>
-                <thead>
-                    <tr>
-                        <th>#</th>
-                        <th>ID</th>
-                        <th>Username</th>
-                        <th>Email</th>
-                        <th>Roles</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                {
-                    data && data.length > 0 ?
-                    data.map((item, index) => 
-                    {
-                        return( 
-                        <tr key={index}>
-                            <td>{index + 1}</td>
-                            <td>{item.id}</td>
-                            <td>{item.userName}</td>
-                            <td>{item.email}</td>
-                            <td>{item.roles}</td>
-                            <td>
-                                <button className= "btn btn-secondary" onClick={() => handleEdit(item.id)}>Edit</button>
-                                <button className= "btn btn-danger" onClick={() => handleDelete(item.id)}>Delete</button>
-                            </td>
-                        </tr>)
-                    }) : (
-                    <tr>
-                        <td colSpan={7} className="text-center">Loading...</td>
-                    </tr>
-                    )
-                }
-            
-                </tbody>
-            </Table>
-            <Modal show={showAdd} onHide={handleCloseAdd}>
-                <Modal.Header closeButton>
-                    <Modal.Title>Add User</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <input type="text" placeholder="Enter Name" className="form-control" 
-                        value={username} onChange={(e) => setUsername(e.target.value)}/>
-                    </Row>
-                    <br/>
-                    <Row>
-                        <Dropdown onSelect={(role) => setRole(role)}>
-                            <Dropdown.Toggle variant="primary">
-                                {role || 'Select Role'}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {roles.map((role, index) => (
-                                    <Dropdown.Item key={index} eventKey={role}>
-                                        {role}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Row>
-                    <br/>
-                    <Row>
-                        <input type="text" placeholder="Enter Email" className="form-control" 
-                        value={emailAddress} onChange={(e) => setEmailAddress(e.target.value)}/>
-                    </Row>
-                    <br/>
-                    <Row>
-                        <input type="text" placeholder="Enter Password" className="form-control" 
-                        value={password} onChange={(e) => setPassword(e.target.value)}/>
-                    </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                    <Button variant="secondary" onClick={handleCloseAdd}>
-                        Close
-                    </Button>
-                    <Button variant="primary" onClick={handleInsert}>
-                        Save Changes
-                    </Button>
-                </Modal.Footer>
-            </Modal>
+return (
+  <div
+    className="bg-image"
+    style={{
+      backgroundImage: `url(${Image5})`,
+      minHeight: "100vh",
+      backgroundSize: "cover",
+      backgroundRepeat: "no-repeat",
+    }}
+  >
+    <Fragment>
+      <div className="d-flex justify-content-between align-items-center mb-4 ps-4 pt-2 pe-4 position-relative">
+        <h1 className="border border-3 rounded p-3 bg-light border-secondary position-absolute start-50 translate-middle-x m-0">
+          Welcome to Admin's Page!
+        </h1>
+        <button className="btn btn-danger ms-auto mb-5" onClick={handleLogOut}>
+          Log Out
+        </button>
+      </div>
+      <Container>
+        <div className="d-flex justify-content-between align-items-center mb-3">
+          <h3>Users</h3>
+          <div className="text-end">
+            <button className="btn btn-primary" onClick={handleAdd}>
+              Add User
+            </button>
+          </div>
+        </div>
+        <Table striped bordered hover>
+          <thead>
+            <tr>
+              <th>#</th>
+              <th>ID</th>
+              <th>Username</th>
+              <th>Email</th>
+              <th>Roles</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            {data && data.length > 0 ? (
+              data.map((item, index) => (
+                <tr key={index}>
+                  <td>{index + 1}</td>
+                  <td>{item.id}</td>
+                  <td>{item.userName}</td>
+                  <td>{item.email}</td>
+                  <td>{item.roles}</td>
+                  <td className="d-flex gap-2 justify-content-center pb-4">
+                    <button
+                      className="btn btn-secondary"
+                      onClick={() => handleEdit(item.id)}
+                    >
+                      Edit
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => handleDelete(item.id)}
+                    >
+                      Delete
+                    </button>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={7} className="text-center">
+                  Loading...
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </Table>
+      </Container>
+      <Modal show={showAdd} onHide={handleCloseAdd}>
+        <Modal.Header closeButton>
+          <Modal.Title>Add User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              className="form-control"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+            />
+          </Row>
+          <br />
+          <Row>
+            <Dropdown onSelect={(role) => setRole(role)}>
+              <Dropdown.Toggle variant="primary">
+                {role || "Select Role"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {roles.map((role, index) => (
+                  <Dropdown.Item key={index} eventKey={role}>
+                    {role}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Row>
+          <br />
+          <Row>
+            <input
+              type="text"
+              placeholder="Enter Email"
+              className="form-control"
+              value={emailAddress}
+              onChange={(e) => setEmailAddress(e.target.value)}
+            />
+          </Row>
+          <br />
+          <Row>
+            <input
+              type="password"
+              placeholder="Enter Password"
+              className="form-control"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseAdd}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleInsert}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+      <Modal show={showEdit} onHide={handleCloseEdit}>
+        <Modal.Header closeButton>
+          <Modal.Title>Edit User</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          <Row>
+            <input
+              type="text"
+              placeholder="Enter Name"
+              className="form-control"
+              value={editUsername}
+              onChange={(e) => setEditUsername(e.target.value)}
+            />
+          </Row>
+          <br />
+          <Row>
+            <Dropdown onSelect={(editRole) => setEditRole(editRole)}>
+              <Dropdown.Toggle variant="primary">
+                {editRole || role || "Select Role"}
+              </Dropdown.Toggle>
+              <Dropdown.Menu>
+                {roles.map((role, index) => (
+                  <Dropdown.Item key={index} eventKey={role}>
+                    {role}
+                  </Dropdown.Item>
+                ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          </Row>
+          <br />
+          <Row>
+            <input
+              type="text"
+              placeholder="Enter Email"
+              className="form-control"
+              value={editEmailAddress}
+              onChange={(e) => setEditEmailAddress(e.target.value)}
+            />
+          </Row>
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="secondary" onClick={handleCloseEdit}>
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleUpdate}>
+            Save Changes
+          </Button>
+        </Modal.Footer>
+      </Modal>
+    </Fragment>
+  </div>
+);
 
-            <Modal show={showEdit} onHide={handleCloseEdit}>
-                <Modal.Header closeButton>
-                <Modal.Title>Edit User</Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    <Row>
-                        <input type="text" placeholder="Enter Name" className="form-control" 
-                        value={editUsername} onChange={(e) => setEditUsername(e.target.value)}/>
-                    </Row>
-                    <br/>
-                    <Row>
-                        <Dropdown onSelect={(editRole) => setEditRole(editRole)}>
-                            <Dropdown.Toggle variant="primary">
-                                {editRole || role || 'Select Role'}
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {roles.map((role, index) => (
-                                    <Dropdown.Item key={index} eventKey={role}>
-                                        {role}
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </Row>
-                    
-                    <br/>
-                    <Row>
-                        <input type="text" placeholder="Enter Email" className="form-control" 
-                        value={editEmailAddress} onChange={(e) => setEditEmailAddress(e.target.value)}/>
-                    </Row>
-                </Modal.Body>
-                <Modal.Footer>
-                <Button variant="secondary" onClick={handleCloseEdit}>
-                    Close
-                </Button>
-                <Button variant="primary" onClick={handleUpdate}>
-                    Save Changes
-                </Button>
-                </Modal.Footer>
-            </Modal>
-
-        </Fragment>
-    )
 }
 export default AdminCRUD;
