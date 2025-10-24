@@ -10,6 +10,7 @@ import axios from "axios";
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useNavigate } from 'react-router-dom';
+import Image5 from './assets/Image5.png';
 
 
 const DoctorCRUD = () => {
@@ -61,14 +62,16 @@ const DoctorCRUD = () => {
         });
     }
 
-    const searchPatients = () => {
+    const searchPatients = () =>
+    {
         if (!searchTerm.trim()) {
             setPatients([]);
             return;
         }
 
         const token = localStorage.getItem('token');
-        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm, 
+
+        axios.get('https://localhost:7108/api/Patient/SearchPatients?searchTerm=' + searchTerm,
         {
             headers: {
                 Authorization: `Bearer ${token}`,
@@ -77,7 +80,8 @@ const DoctorCRUD = () => {
         })
         .then((result) => {
             setPatients(result.data);
-            if (result.data.length === 0) {
+            
+            if(result.data.length === 0) {
                 toast.error('No patients found');
             }
             else
@@ -218,7 +222,7 @@ const DoctorCRUD = () => {
         })
         .then((result) => {
             if (result.status === 200) {
-                toast.success('Visit deleted successfully!');
+                toast.success('Visit Successfully Deleted!');
                 if (selectedPatient) {
                     getPatientVisits(selectedPatient.patientId);
                 }
@@ -239,6 +243,15 @@ const DoctorCRUD = () => {
 
 
     return (
+        <div
+            className="bg-image"
+            style={{
+              backgroundImage: `url(${Image5})`,
+              minHeight: "100vh",
+              backgroundSize: "cover",
+              backgroundRepeat: "no-repeat",
+            }}
+          >
         <Fragment>
             <ToastContainer />
             <br />
@@ -480,6 +493,7 @@ const DoctorCRUD = () => {
                 </Modal.Footer>
             </Modal>
     	</Fragment>
+        </div>
     );
 }
 

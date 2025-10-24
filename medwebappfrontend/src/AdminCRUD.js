@@ -39,6 +39,9 @@ const AdminCRUD = () =>
     const [editRole, setEditRole] = useState('');
 
     const [selectedRole, setSelectedRole] = useState("Select Role");
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteUserID, setDeleteUserID] = useState(null);
     
     const [token, setToken] = useState([]);
 
@@ -202,10 +205,13 @@ const AdminCRUD = () =>
         })
     }
 
+    const confirmDelete = (id) => {
+        setDeleteUserID(id);
+        setShowDeleteModal(true);
+    };
+    
     const handleDelete = (id) =>
     {
-        if(window.confirm("Are you sure you want to delete this user?") == true)
-        {
             const token = localStorage.getItem('token');
 
             axios.delete('https://localhost:7108/api/Admin/DeleteUser?id='+ id, 
@@ -219,12 +225,13 @@ const AdminCRUD = () =>
                 console.log(result.data);
                 getUserData();
                 toast.success('User Successfully Deleted!');
+                setShowDeleteModal(false);
+                setDeleteUserID(null);
             })
             .catch((error) => {
                 console.log(error);
                 toast.error('Failed To Delete User!');
             });
-        }
     }
 
     const handleLogOut = () =>
@@ -245,6 +252,7 @@ return (
     }}
   >
     <Fragment>
+      <ToastContainer/>
       <div className="d-flex justify-content-between align-items-center mb-4 ps-4 pt-2 pe-4 position-relative">
         <h1 className="border border-3 rounded p-3 bg-light border-secondary position-absolute start-50 translate-middle-x m-0">
           Welcome to Admin's Page!
@@ -266,7 +274,6 @@ return (
           <thead>
             <tr>
               <th>#</th>
-              <th>ID</th>
               <th>Username</th>
               <th>Email</th>
               <th>Roles</th>
@@ -278,7 +285,6 @@ return (
               data.map((item, index) => (
                 <tr key={index}>
                   <td>{index + 1}</td>
-                  <td>{item.id}</td>
                   <td>{item.userName}</td>
                   <td>{item.email}</td>
                   <td>{item.roles}</td>
@@ -291,7 +297,7 @@ return (
                     </button>
                     <button
                       className="btn btn-danger"
-                      onClick={() => handleDelete(item.id)}
+                      onClick={() => confirmDelete(item.id)}
                     >
                       Delete
                     </button>
@@ -416,6 +422,33 @@ return (
           </Button>
         </Modal.Footer>
       </Modal>
+
+    {/* Delete Confirmation Modal */}
+      <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <Modal.Header closeButton>
+              <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+              <p>
+                  Are you sure you want to delete this user? This action
+                  cannot be undone.
+              </p>
+          </Modal.Body>
+          <Modal.Footer>
+              <Button
+                  variant="secondary"
+                  onClick={() => setShowDeleteModal(false)}
+              >
+                  Cancel
+              </Button>
+              <Button
+                  variant="danger"
+                  onClick={() => handleDelete(deleteUserID)}
+              >
+                  Delete
+              </Button>
+          </Modal.Footer>
+      </Modal>  
     </Fragment>
   </div>
 );
