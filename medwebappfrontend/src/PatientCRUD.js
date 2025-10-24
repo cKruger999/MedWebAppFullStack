@@ -47,6 +47,9 @@ const  MedApp = () =>
 
     const [searchTerm, setSearchTerm] = useState("");
     const [patients, setPatients] = useState([]);
+
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deletePatientID, setDeletePatientID] = useState(null);
     
     const [token, setToken] = useState([]);
     
@@ -54,11 +57,16 @@ const  MedApp = () =>
     {
         setToken(localStorage.getItem("token"))
         getPatientData();
-    },[])
+    },[token])
 
     const getPatientData = () =>
     {
-        axios.get('https://localhost:7108/api/Patient/GetPatients')
+        const token = localStorage.getItem("token");
+        axios.get('https://localhost:7108/api/Patient/GetPatients',{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result) =>
         {setPatients(result.data)})
         .catch((error)=>{
@@ -67,6 +75,7 @@ const  MedApp = () =>
 
     const handleSave = () =>
     {
+        const token = localStorage.getItem("token");
         const url = 'https://localhost:7108/api/Patient/AddPatient';
         const data = {
             "patientName": patientName,
@@ -79,7 +88,11 @@ const  MedApp = () =>
             "hasMedicalAid": hasMedicalAid,
             "medicalAidCompany": medicalAidCompany
         }
-        axios.post(url, data)
+        axios.post(url, data,{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result)=>{
             getPatientData() 
             clear();
@@ -116,9 +129,14 @@ const  MedApp = () =>
     }
     const handleEdit = (id) =>
     {
+        const token = localStorage.getItem("token");
         //alert(id);
         handleShowEdit();
-        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id)
+        axios.get('https://localhost:7108/api/Patient/GetPatient/' + id,{
+            headers: {
+                'Authorization': `Bearer ${token}`
+    }
+})
         .then((result) =>
         {
             setEditPatientID(result.data.patientId)
@@ -137,25 +155,37 @@ const  MedApp = () =>
             console.log(error)
         })
     }
+
+    const confirmDelete = (id) => {
+    setDeletePatientID(id);
+    setShowDeleteModal(true);
+  };
+
     const handleDelete = (id) =>
     {
-        if(window.confirm("Are you sure you want to delete this patient?") === true)
-        {
+            const token = localStorage.getItem("token");
             const url = 'https://localhost:7108/api/Patient/DeletePatient/' + id;
-            axios.delete(url)
+            axios.delete(url,{
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+                    )
             .then((result) =>{
                 if(result.status === 200)
                 {
                     toast.success('Patient Successfully Deleted!');
                     getPatientData();
                     clear();
+                    setShowDeleteModal(false);
+                    setDeletePatientID(null);
                 }
             })
             .catch((error)=>{
                 toast.error(error);
             })            
-        }
     }
+
     const handleLogOut = () =>
     {
         localStorage.removeItem("token");
@@ -163,6 +193,7 @@ const  MedApp = () =>
     }
     const handleUpdate = () =>
     {
+        const token = localStorage.getItem("token");
         const url = 'https://localhost:7108/api/Patient/UpdatePatient/' + editPatientID;
         const data = {
             "patientName": editPatientName,
@@ -175,7 +206,11 @@ const  MedApp = () =>
             "hasMedicalAid": editHasMedicalAid,
             "medicalAidCompany": editMedicalAidCompany
         }
-        axios.put(url, data)
+        axios.put(url, data,{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result) =>{
             if(result.status === 200)
             {
@@ -194,7 +229,12 @@ const  MedApp = () =>
             return;
         }
 
-        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm)
+        const token = localStorage.getItem("token");
+        axios.get('https://localhost:7108/api/Patient/search?searchTerm=' + searchTerm,{
+            headers: {
+                'Authorization': `Bearer ${token}`
+            }
+        })
         .then((result) => {
             setPatients(result.data);
             if(result.data.length === 0) {
@@ -208,6 +248,13 @@ const  MedApp = () =>
             toast.error('Failed to search patients');
         });
     }
+
+    const showAllPatients = () => {
+          setSearchTerm(""); // Clear the search input
+          getPatientData(); // Fetch all patients again
+          toast.info("Showing all patients");
+        };
+
     return (
     <div className="bg-image" style={{
         backgroundImage: `url(${image3})`,
@@ -245,6 +292,9 @@ const  MedApp = () =>
                     />
                     <button className="btn btn-primary" onClick={searchPatients}>
                     Search
+                    </button>
+                    <button className="btn btn-secondary ms-2" onClick={showAllPatients}>
+                    Show All Patients
                     </button>
                 </div>
                 </Col>
@@ -391,7 +441,7 @@ const  MedApp = () =>
                         <td>{items.medicalAidCompany}</td>
                         <td colSpan={2}>
                             <button className='btn btn-primary' onClick={() => handleEdit(items.patientId)}>Edit</button> &nbsp;
-                            <button className='btn btn-danger'onClick={() => handleDelete(items.patientId)}>Delete</button>
+                            <button className='btn btn-danger'onClick={() => confirmDelete(items.patientId)}>Delete</button>
                         </td>
                         </tr>)
                 }) : (
@@ -501,6 +551,33 @@ const  MedApp = () =>
                     Save Changes
                 </Button>
             </Modal.Footer>
+        </Modal>
+
+        {/* Delete Confirmation Modal */}
+        <Modal show={showDeleteModal} onHide={() => setShowDeleteModal(false)}>
+          <Modal.Header closeButton>
+            <Modal.Title>Confirm Delete</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <p>
+              Are you sure you want to delete this patient? This action
+              cannot be undone.
+            </p>
+          </Modal.Body>
+          <Modal.Footer>
+            <Button
+              variant="secondary"
+              onClick={() => setShowDeleteModal(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              variant="danger"
+              onClick={() => handleDelete(deletePatientID)}
+            >
+              Delete
+            </Button>
+          </Modal.Footer>
         </Modal>
     </Fragment>
     </div>

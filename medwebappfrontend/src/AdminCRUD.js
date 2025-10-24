@@ -290,7 +290,7 @@ return (
                   <td>{item.roles}</td>
                   <td className="d-flex gap-2 justify-content-center pb-4">
                     <button
-                      className="btn btn-secondary"
+                      className="btn btn-primary"
                       onClick={() => handleEdit(item.id)}
                     >
                       Edit

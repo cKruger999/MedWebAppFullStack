@@ -245,26 +245,24 @@ const DoctorCRUD = () => {
                 </div>
             </Container>
         {/* Search Section */}
-        <Container className="mt-5">
-          <Row>
-            <Col>
+        <Container className="my-4">
+          <Row className="justify-content-center">
+            <Col md={6}>
+            <div className="d-flex">
               <input
                 type="text"
-                className="form-control"
+                className="form-control me-2"
                 placeholder="Search patients by Name, Surname, or Username..."
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
               />
-            </Col>
-            <Col>
               <button className="btn btn-primary" onClick={searchPatients}>
                 Search Patients
               </button>
-            </Col>
-            <Col className="d-flex justify-content-end">
-              <button className="btn btn-secondary" onClick={showAllPatients}>
+              <button className="btn btn-secondary ms-2" onClick={showAllPatients}>
                 Show All Patients
               </button>
+              </div>
             </Col>
           </Row>
         </Container>
@@ -284,7 +282,7 @@ const DoctorCRUD = () => {
                     <th>Name</th>
                     <th>Surname</th>
                     <th>Username</th>
-                    <th>Select</th>
+                    <th>Actions</th>
                   </tr>
                 </thead>
                 <tbody>
@@ -351,7 +349,7 @@ const DoctorCRUD = () => {
                         <td>{visit.treatment || "N/A"}</td>
                         <td>
                           <button
-                            className="btn btn-warning"
+                            className="btn btn-primary"
                             onClick={() => handleEdit(visit.visitId)}
                           >
                             Edit
