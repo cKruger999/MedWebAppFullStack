@@ -17,6 +17,7 @@ namespace MedWebApp.Controllers
         {
             this.dbContext = dbContext;
         }
+
         [HttpGet]
         [Route("GetPatients")]
         public IActionResult GetAllPatients()
@@ -24,6 +25,7 @@ namespace MedWebApp.Controllers
             var allpatients = dbContext.Patients.ToList();
             return Ok(allpatients);
         }
+
         [HttpPost]
         [Route("AddPatient")]
         public IActionResult AddPatient(AddPatientDto addPatientDto)
@@ -45,6 +47,7 @@ namespace MedWebApp.Controllers
             dbContext.SaveChanges();
             return Ok(patientEntity);
         }
+
         [HttpGet]
         [Route("GetPatient/{id}")]
 
@@ -95,7 +98,7 @@ namespace MedWebApp.Controllers
             return Ok(patient);
         }
 
-        [HttpGet("search")]
+        [HttpGet("SearchPatients")]
         public IActionResult SearchPatients([FromQuery] string searchTerm)
         {
             if (string.IsNullOrWhiteSpace(searchTerm))

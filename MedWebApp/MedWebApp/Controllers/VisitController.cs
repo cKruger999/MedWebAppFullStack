@@ -13,10 +13,12 @@ namespace MedWebApp.Controllers
     public class VisitController : ControllerBase
     {
         readonly MedAppDbContext _dbContext;
+
         public VisitController(MedAppDbContext dbContext)
         {
             _dbContext = dbContext;
         }
+
         [HttpGet]
         [Route("GetHistory/{id}")]
         public IActionResult ViewHistory(int id) 
@@ -33,6 +35,7 @@ namespace MedWebApp.Controllers
                 .ToList();
             return Ok(visitHistory);
         }
+
         [HttpPost]
         [Route("AddVisit")]
         public IActionResult AddVisitRecord(AddVisitRecordDto addVisitRecordDto)
@@ -48,6 +51,7 @@ namespace MedWebApp.Controllers
             _dbContext.SaveChanges();
             return Ok(visitRecord);
         }
+
         [HttpPut]
         [Route("UpdateVisit/{id}")]
         public IActionResult UpdateVisitRecord(int id, UpdateVisitRecordDto updateVisitRecordDto)
@@ -64,6 +68,7 @@ namespace MedWebApp.Controllers
             _dbContext.SaveChanges();
             return Ok(visitRecord);
         }
+
         [HttpDelete]
         [Route("DeleteVisit/{id}")]
         public IActionResult DeleteVisitRecord(int id)
