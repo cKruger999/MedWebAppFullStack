@@ -17,8 +17,18 @@ const DoctorCRUD = () => {
     const navigate = useNavigate();
 
     const [show, setShow] = useState(false);
-    const handleClose = () => setShow(false);
+    const handleClose = () => 
+      {
+        setShow(false);
+        clear();
+      }
+    
     const handleShow = () => setShow(true);
+
+    const handleAddVisit = () => { 
+      clear(); 
+      handleShow(); 
+    };
 
     const [searchTerm, setSearchTerm] = useState('');
     const [selectedPatient, setSelectedPatient] = useState(null);
@@ -82,8 +92,8 @@ const DoctorCRUD = () => {
     }
 
     const showAllPatients = () => {
-      setSearchTerm(""); // Clear the search input
-      getPatients(); // Fetch all patients again
+      setSearchTerm(""); 
+      getPatients();
       toast.info("Showing all patients");
     };
 
@@ -127,6 +137,8 @@ const DoctorCRUD = () => {
             getPatientVisits(selectedPatient.patientId);
             clear();
             toast.success('Visit Successfully Added!');
+            handleClose();
+            clear();
         })
         .catch((error) => {
             toast.error('Failed to add visit');
@@ -324,7 +336,7 @@ const DoctorCRUD = () => {
                   {selectedPatient &&
                     ` - ${selectedPatient.patientName} ${selectedPatient.patientSurname}`}
                 </h4>
-                <button className="btn btn-primary" onClick={handleShow}>
+                <button className="btn btn-primary" onClick={handleAddVisit}>
                   + Add Visit
                 </button>
               </div>
