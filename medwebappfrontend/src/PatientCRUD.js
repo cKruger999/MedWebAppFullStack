@@ -250,8 +250,8 @@ const  MedApp = () =>
     }
 
     const showAllPatients = () => {
-          setSearchTerm(""); // Clear the search input
-          getPatientData(); // Fetch all patients again
+          setSearchTerm(""); 
+          getPatientData(); 
           toast.info("Showing all patients");
         };
 
